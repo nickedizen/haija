@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import '../data/book_data.dart';
 import '../models/book.dart';
+import '../widgets/indented_list_view.dart';
 import '../widgets/profile_info_item.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -199,25 +202,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child:
           Column(
             children: [
-              Stack(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, 
                 children: [
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    color: Colors.black,
-                    child: Center(
-                      child: Text(
-                        "Profile",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white
-                        ),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60, left: 15),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
-                  
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
+                      child: TextField(
+                        style: TextStyle(height: 0.1),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(width: 0.8),
+                          ),
+                          hintText: 'Search',
+                          prefixIcon: Icon(Icons.search,
+                          size: 30.0,),
+                          suffixIcon: IconButton(icon: Icon(Icons.clear),
+                          onPressed: () {},)),
+                          
+                      )
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
+                    child: IconButton(
+                      icon: Icon(Icons.chat_bubble),
+                      onPressed: () {},),
+                  ),
+                ]
+              ),
+              Stack(
+                children: [                 
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
@@ -225,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         //TODO: 2. Buat bagian ProfileHeader yang berisi gambar profil
                         Align(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 200 - 50),
+                            padding: const EdgeInsets.only(top: 30),
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
@@ -246,7 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         shape: BoxShape.circle,
                                       ),
                                       child: const CircleAvatar(
-                                        radius: 50,
+                                        radius: 60,
                                         backgroundImage:
                                             AssetImage("images/placeholder_image.png"),
                                       ),
@@ -264,101 +289,166 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-
-                        //TODO: 3. Buat buat ProfileInfo yang berisi info profil
+                        SizedBox(height: 20,),
+                        Text(
+                          'AAn Pyongyang',
+                          style: TextStyle(
+                            fontSize: 25, 
+                            fontWeight: FontWeight.bold)
+                        ),
                         SizedBox(height: 20),
-                        //Divider(color: Colors.deepPurple[100]),
-                        SizedBox(height: 4),
-                        
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          margin: EdgeInsets.only(top: 16),
-                          padding: EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Color(0xffD9D9D9)
-                          ),
-                          child : ProfileInfoItem(
-                            icon: Icons.lock,
-                            label: 'Name',
-                            value: userName,
-                            showEditIcon: isSignedIn,
-                            onEditPressed: () {
-                              editUserName();
-                              debugPrint('Icon edit ditekan ...');
-                            },
-                            iconColor: Colors.amber),
+                        Divider(
+                          height: 20,
+                          thickness: 1,
+                          indent: 20,
+                          endIndent: 20,
+                          color: Colors.grey,
                         ),
-                        SizedBox(height: 4),
-                        //Divider(color: Colors.deepPurple[100]),
-                        SizedBox(height: 4),
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          margin: EdgeInsets.only(top: 16),
-                          padding: EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Color(0xffD9D9D9)
-                          ),
-                          child : ProfileInfoItem(
-                            icon: Icons.person,
-                            label: 'E-mail',
-                            value: email,
-                            iconColor: Colors.black),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Text('ADD FRIEND',
+                              style: TextStyle(fontSize: 20),)
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Text('CHAT',
+                              style: TextStyle(fontSize: 20),)
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Text('MEETUP',
+                              style: TextStyle(fontSize: 20),)
+                            ),
+                          ],
                         ),
-
-                        SizedBox(height: 4),
-                        //Divider(color: Colors.deepPurple[100]),
-                        SizedBox(height: 4),
-                        Container(
-                          width: double.infinity,
-                          height: 60,
-                          margin: EdgeInsets.only(top: 16, bottom: 16),
-                          padding: EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            color: Color(0xffD9D9D9)
-                          ),
-                          child : ProfileInfoItem(
-                            icon: Icons.favorite,
-                            label: 'Favorit',
-                            value: '${favoriteBooks.length}',
-                            iconColor: favoriteBooks.length > 0 ? Colors.red : Colors.grey,),
+                        SizedBox(height: 10),
+                        Divider(
+                          height: 20,
+                          thickness: 1,
+                          indent: 20,
+                          endIndent: 20,
+                          color: Colors.grey,
                         ),
-                        
-
-                        //TODO: 4. Buat ProfileAction yang berisi TextButton sign in/out
-                        SizedBox(height: 4),
-                        //Divider(color: Colors.deepPurple[100]),
-                        SizedBox(height: 20),
-                        // isSignedIn
-                        //     ? TextButton(onPressed: signOut, child: Text('Sign Out'))
-                        //     : TextButton(onPressed: signIn, child: Text('Sign In')),
-                        Container(
-                          width: double.infinity,
-                          height: 45,
-                          margin: EdgeInsets.only(top: 16),
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                        SizedBox(height: 20,),
+                        Text('Saya adalah tangan kanan kim jong un'),
+                        SizedBox(height: 20,),
+                        Divider(
+                          height: 20,
+                          thickness: 3,
+                          color: Colors.black,
+                        ),
+                        SizedBox(height: 20,),
+                        Text(
+                          '10 Favorite Books',
+                          style: TextStyle(
+                            fontSize: 25, 
+                            fontWeight: FontWeight.bold)
+                        ),
+                        Divider(
+                          height: 20,
+                          thickness: 4,
+                          color: Colors.grey,
+                          indent: 70,
+                          endIndent: 70,
+                        ),
+                        SizedBox(height: 30),
+                        IndentedListView(itemList: bookList, indent: 15),
+                        SizedBox(height: 20,),
+                        Divider(
+                          height: 20,
+                          thickness: 3,
+                          color: Colors.black,
+                        ),
+                        SizedBox(height: 20,),
+                        Text(
+                          'Friends',
+                          style: TextStyle(
+                            fontSize: 25, 
+                            fontWeight: FontWeight.bold)
+                        ),
+                        Divider(
+                          height: 20,
+                          thickness: 4,
+                          color: Colors.grey,
+                          indent: 70,
+                          endIndent: 70,
+                        ),
+                        SizedBox(height: 20,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Column(
+                                children: [ClipOval(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Text('User 1')
+                                ]
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.pushNamedAndRemoveUntil(context, '/welcome', ModalRoute.withName('/welcome'));
-                            },
-                            child: const Text(
-                              "Log Out",
-                              style: TextStyle(
-                                color: Color(0xffffffff),
-                                fontSize: 18
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Column(
+                                children: [ClipOval(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Text('User 1')
+                                ]
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Column(
+                                children: [ClipOval(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Text('User 1')
+                                ]
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 2),
+                              child: Column(
+                                children: [ClipOval(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ),
+                                Text('User 1')
+                                ]
+                              ),
+                            ),
+                            
+                          ]
                         ),
+                        SizedBox(height: 30)
                       ],
                     ),
                   )
