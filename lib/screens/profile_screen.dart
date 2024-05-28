@@ -315,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('CHAT',
+                              child: Text('CHATt',
                               style: TextStyle(fontSize: 20),)
                             ),
                             Padding(
