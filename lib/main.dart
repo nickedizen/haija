@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Haijo Library',
       theme: ThemeData(),
-      home: SplashScreen(),
+      home: WelcomeScreen(),
       routes: {
         // '/homescreen': (context) => const HomeScreen(),
         '/signin': (context) => SignInScreen(),
