@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:final_project_haijo/screens/sign_in_screen.dart';
+import 'package:final_project_haija/screens/sign_in_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   WelcomeScreen({super.key});

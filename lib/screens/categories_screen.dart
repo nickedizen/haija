@@ -1,6 +1,6 @@
-import 'package:final_project_haijo/screens/search_screen.dart';
-import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
-import 'package:final_project_haijo/widgets/shadow_above_image_button.dart';
+import 'package:final_project_haija/screens/search_screen.dart';
+import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
+import 'package:final_project_haija/widgets/shadow_above_image_button.dart';
 import 'package:flutter/material.dart';
 
 class CategoriesScreen extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:final_project_haijo/screens/filtered_screen.dart';
+import 'package:final_project_haija/screens/filtered_screen.dart';
 import 'package:flutter/material.dart';
 
 class ShadowAboveImageButton extends StatelessWidget {

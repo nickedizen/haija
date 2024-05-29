@@ -1,6 +1,6 @@
-import 'package:final_project_haijo/models/book.dart';
-import 'package:final_project_haijo/screens/detail_screen.dart';
-import 'package:final_project_haijo/screens/profile_screen.dart';
+import 'package:final_project_haija/models/book.dart';
+import 'package:final_project_haija/screens/detail_screen.dart';
+import 'package:final_project_haija/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class IndentedListView extends StatelessWidget {

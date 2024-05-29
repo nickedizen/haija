@@ -1,9 +1,9 @@
-import 'package:final_project_haijo/data/book_data.dart';
-import 'package:final_project_haijo/models/book.dart';
-import 'package:final_project_haijo/screens/filtered_screen.dart';
-import 'package:final_project_haijo/screens/search_screen.dart';
-import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
-import 'package:final_project_haijo/widgets/indented_list_view.dart';
+import 'package:final_project_haija/data/book_data.dart';
+import 'package:final_project_haija/models/book.dart';
+import 'package:final_project_haija/screens/filtered_screen.dart';
+import 'package:final_project_haija/screens/search_screen.dart';
+import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
+import 'package:final_project_haija/widgets/indented_list_view.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
