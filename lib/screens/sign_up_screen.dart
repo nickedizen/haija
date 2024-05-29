@@ -1,6 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,7 +25,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   //TODO: 1. Membuat Method _signUp
   void _signUp() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String username = _usernameController.text.trim();
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
@@ -76,23 +74,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isNotEmpty &&
         password.isNotEmpty &&
         confirmPassword.isNotEmpty) {
-      final encrypt.Key key = encrypt.Key.fromLength(32);
-      final iv = encrypt.IV.fromLength(16);
 
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final encryptedUserName = encrypter.encrypt(username, iv: iv);
-      final encryptedEmail = encrypter.encrypt(email, iv: iv);
-      final encryptedPassword = encrypter.encrypt(password, iv: iv);
-      final encryptedconfirmPassword =
-      encrypter.encrypt(confirmPassword, iv: iv);
-
-      prefs.setString('username', encryptedUserName.base64);
-      prefs.setString('email', encryptedEmail.base64);
-      prefs.setString('password', encryptedPassword.base64);
-      prefs.setString('confirmPassword', encryptedconfirmPassword.base64);
-      prefs.setString('key', key.base64);
-      prefs.setString('iv', iv.base64);
-    }
+          FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: email, 
+            password: password
+          );
+        }
 
     setState(() {
       _usernameErrorText = '';
@@ -146,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   border: const OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -203,11 +190,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 obscureText: _obscureConfirmPassword,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Register button
               ElevatedButton(
                 onPressed: _signUp,
-                style: ElevatedButton.styleFrom(primary: Colors.black),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                 child: const Text(
                   'Register',
                   style: TextStyle(color: Colors.white),

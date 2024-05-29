@@ -1,3 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+import 'package:flutter/material.dart';
 import 'package:final_project_haija/screens/categories_screen.dart';
 import 'package:final_project_haija/screens/favorites_screen.dart';
 import 'package:final_project_haija/screens/main_screen.dart';
@@ -5,11 +9,13 @@ import 'package:final_project_haija/screens/profile_screen.dart';
 import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:final_project_haija/screens/sign_up_screen.dart';
 import 'package:final_project_haija/screens/welcome_screen.dart';
-import 'package:flutter/material.dart';
 
-
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp()); 
 }
 
 class MyApp extends StatelessWidget {
@@ -20,9 +26,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Haijo Library',
+      title: 'Haija Library',
       theme: ThemeData(),
-      home: WelcomeScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return MainScreen();
+          } else {
+            return WelcomeScreen();
+          }
+        }
+      ),
       routes: {
         // '/homescreen': (context) => const HomeScreen(),
         '/signin': (context) => SignInScreen(),
