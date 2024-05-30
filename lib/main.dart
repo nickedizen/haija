@@ -4,6 +4,7 @@ import 'package:final_project_haijo/screens/main_screen.dart';
 import 'package:final_project_haijo/screens/profile_screen.dart';
 import 'package:final_project_haijo/screens/sign_in_screen.dart';
 import 'package:final_project_haijo/screens/sign_up_screen.dart';
+import 'package:final_project_haijo/screens/splash_screen.dart';
 import 'package:final_project_haijo/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Haijo Library',
       theme: ThemeData(),
-      home: WelcomeScreen(),
+      home: ProfileScreen(),
       routes: {
         // '/homescreen': (context) => const HomeScreen(),
         '/signin': (context) => SignInScreen(),
