@@ -1,3 +1,5 @@
+import 'package:final_project_haija/models/user.dart';
+import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +14,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   String _usernameErrorText = '';
   String _emailErrorText = '';
@@ -74,22 +75,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isNotEmpty &&
         password.isNotEmpty &&
         confirmPassword.isNotEmpty) {
+          try {
+            FirebaseAuth.instance.createUserWithEmailAndPassword(
+              email: email, 
+              password: password
+            );
+            AppUserService.addNewAppUser(
+              AppUser(
+                id: FirebaseAuth.instance.currentUser!.uid, 
+                username: username)
+            );
+            FirebaseAuth.instance.signOut();
+            Navigator.pushReplacementNamed(context, '/signin');
+          } catch (error) {
+            setState(() {
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('E-mail telah terdaftar!'))
+            );
+          }
 
-          FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email, 
-            password: password
-          );
+          setState(() {
+            _usernameErrorText = '';
+            _emailErrorText = '';
+            _passwordErrorText = '';
+            _confirmPasswordErrorText = '';
+          });
         }
 
-    setState(() {
-      _usernameErrorText = '';
-      _emailErrorText = '';
-      _passwordErrorText = '';
-      _confirmPasswordErrorText = '';
-    });
-
-    //buat navigasi ke SignUpScreen
-    Navigator.pushReplacementNamed(context, '/signin');
   }
 
   //TODO: 2. Membuat method dispose
