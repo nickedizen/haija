@@ -1,4 +1,4 @@
-import 'package:final_project_haija/models/user.dart';
+import 'package:final_project_haija/models/app_user.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  //TODO: 1. Membuat Method _signUp
   void _signUp() async {
     final String username = _usernameController.text.trim();
     final String email = _emailController.text.trim();
@@ -70,30 +69,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // TODO: 3. Jika name, username, password tidak kosong lakukan enkripsi
     if (username.isNotEmpty &&
         email.isNotEmpty &&
         password.isNotEmpty &&
         confirmPassword.isNotEmpty) {
-          try {
-            FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email, 
-              password: password
-            );
+
+          FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: email,
+            password: password,
+          ).then((userCredential) {
             AppUserService.addNewAppUser(
-              AppUser(
-                id: FirebaseAuth.instance.currentUser!.uid, 
-                username: username)
+              id: userCredential.user!.uid,
+              appUser: AppUser(username: username),
             );
             FirebaseAuth.instance.signOut();
             Navigator.pushReplacementNamed(context, '/signin');
-          } catch (error) {
+          }).catchError((error) {
+            String errorText = error.toString();
             setState(() {
             });
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('E-mail telah terdaftar!'))
+              SnackBar(content: Text(errorText)),
             );
-          }
+          });
+
 
           setState(() {
             _usernameErrorText = '';

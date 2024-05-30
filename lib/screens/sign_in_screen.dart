@@ -1,7 +1,9 @@
 import 'package:final_project_haija/screens/main_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project_haija/models/app_user.dart';
 
 class SignInScreen extends StatefulWidget {
   SignInScreen({super.key});
