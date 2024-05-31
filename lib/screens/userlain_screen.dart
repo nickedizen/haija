@@ -12,14 +12,14 @@ import '../models/book.dart';
 import '../widgets/indented_list_view.dart';
 import '../widgets/profile_info_item.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class UserLainScreen extends StatefulWidget {
+  const UserLainScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<UserLainScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<UserLainScreen> {
   //TODO: 1. Deklarasikan variabel yang dibutuhkan
   
   bool isSignedIn = false;
@@ -310,17 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('ADD FRIEND',
-                              style: TextStyle(fontSize: 20),)
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('CHATt',
-                              style: TextStyle(fontSize: 20),)
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('MEETUP',
+                              child: Text('EDIT PROFILE',
                               style: TextStyle(fontSize: 20),)
                             ),
                           ],
