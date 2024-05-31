@@ -23,7 +23,7 @@ class AppUser {
   factory AppUser.fromDocument(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return AppUser(
-      status: data['user'],
+      status: data['status'],
       username: data['username'],
       profilePicture: data['profilePicture'],
       profileBio: data['profileBio'],

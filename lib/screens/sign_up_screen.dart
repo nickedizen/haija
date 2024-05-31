@@ -14,7 +14,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   String _usernameErrorText = '';
   String _emailErrorText = '';
@@ -55,7 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _usernameErrorText = '';
         _emailErrorText = '';
         _passwordErrorText =
-        'Minimal 8 karakter, kombinasi [A-Z], [a-z], [0-9], [!@#\\\$%^&*(),.?":{}|<>]';
+            'Minimal 8 karakter, kombinasi [A-Z], [a-z], [0-9], [!@#\\\$%^&*(),.?":{}|<>]';
         _confirmPasswordErrorText = '';
       });
       return;
@@ -73,35 +74,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isNotEmpty &&
         password.isNotEmpty &&
         confirmPassword.isNotEmpty) {
+      FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((userCredential) {
+        AppUserService.addNewAppUser(AppUser(username: username));
+        FirebaseAuth.instance.signOut();
+        Navigator.pushReplacementNamed(context, '/signin');
+      }).catchError((error) {
+        String errorText = error.toString();
+        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorText)),
+        );
+      });
 
-          FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          ).then((userCredential) {
-            AppUserService.addNewAppUser(
-              id: userCredential.user!.uid,
-              appUser: AppUser(username: username),
-            );
-            FirebaseAuth.instance.signOut();
-            Navigator.pushReplacementNamed(context, '/signin');
-          }).catchError((error) {
-            String errorText = error.toString();
-            setState(() {
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(errorText)),
-            );
-          });
-
-
-          setState(() {
-            _usernameErrorText = '';
-            _emailErrorText = '';
-            _passwordErrorText = '';
-            _confirmPasswordErrorText = '';
-          });
-        }
-
+      setState(() {
+        _usernameErrorText = '';
+        _emailErrorText = '';
+        _passwordErrorText = '';
+        _confirmPasswordErrorText = '';
+      });
+    }
   }
 
   //TODO: 2. Membuat method dispose
@@ -141,7 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: InputDecoration(
                   labelText: 'Username',
                   errorText:
-                  _usernameErrorText.isNotEmpty ? _usernameErrorText : null,
+                      _usernameErrorText.isNotEmpty ? _usernameErrorText : null,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -151,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   errorText:
-                  _emailErrorText.isNotEmpty ? _emailErrorText : null,
+                      _emailErrorText.isNotEmpty ? _emailErrorText : null,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -161,7 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   errorText:
-                  _passwordErrorText.isNotEmpty ? _passwordErrorText : null,
+                      _passwordErrorText.isNotEmpty ? _passwordErrorText : null,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     onPressed: () {
