@@ -1,4 +1,5 @@
 import 'package:final_project_haijo/screens/categories_screen.dart';
+import 'package:final_project_haijo/screens/editProfile_screen.dart';
 import 'package:final_project_haijo/screens/favorites_screen.dart';
 import 'package:final_project_haijo/screens/main_screen.dart';
 import 'package:final_project_haijo/screens/profile_screen.dart';
