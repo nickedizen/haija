@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project_haija/models/author.dart';
+import 'package:final_project_haija/models/review.dart';
+
 class Book {
   final String title;
-  final String author;
+  final List<Author> author;
   final DateTime publishedDate;
   final double? rating;
   final String description;
   final List<String> genre;
   final String imageAsset;
-  bool isFavorite;
+  List<Review>? reviews;
+  List<String>? idOfUsersLikeThisBook;
 
   Book({
     required this.title,
@@ -16,6 +21,36 @@ class Book {
     required this.description,
     required this.genre,
     required this.imageAsset,
-    required this.isFavorite
+    this.reviews,
+    this.idOfUsersLikeThisBook
   });
+
+  factory Book.fromDocument(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return Book(
+      title: data['title'],
+      author: data['author'],
+      publishedDate: data['publishedDate'],
+      rating: data['rating'],
+      description: data['description'],
+      genre: data['genre'],
+      imageAsset: data['imageAsset'],
+      reviews: data['reviews'],
+      idOfUsersLikeThisBook: data['idOfUsersLikeThisBook']
+    );
+  }
+
+  Map<String, dynamic> toDocument() {
+    return {
+      'title': title,
+      'author': author,
+      'publishedDate': publishedDate,
+      'rating': rating,
+      'description': description,
+      'genre': genre,
+      'imageAsset': imageAsset,
+      'reviews': reviews,
+      'idOfUsersLikeThisBook': idOfUsersLikeThisBook
+    };
+  }
 }
