@@ -1,6 +1,9 @@
 import 'dart:io';
 
-import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
+import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/services/appuser_service.dart';
+import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,26 +15,31 @@ import '../models/book.dart';
 import '../widgets/indented_list_view.dart';
 import '../widgets/profile_info_item.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class UserLainProfileScreen extends StatefulWidget {
+  const UserLainProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<UserLainProfileScreen> createState() => _UserLainProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  //TODO: 1. Deklarasikan variabel yang dibutuhkan
-  
+class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
+  AppUser? user;
   bool isSignedIn = false;
   String email = '';
   String userName = '';
   int favoriteBookCount = 0;
-  final TextEditingController _editedUserNameController = TextEditingController();
-
+  final TextEditingController _editedUserNameController =
+      TextEditingController();
   String _imageFile = '';
   final picker = ImagePicker();
-
   List<Book> favoriteBooks = [];
+
+  void _getUser() async {
+    final appUser = await AppUserService.getAppUserData();
+    setState(() {
+      user = appUser;
+    });
+  }
 
   Future<void> _getImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
@@ -47,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     prefs.setString('_imageFile', path);
   }
 
-
   void _showPicker() {
     showModalBottomSheet(
         context: context,
@@ -55,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
+              const ListTile(
                 title: Text(
                   'Image Source',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -85,6 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     _loadUserData();
     _loadFavoriteBooks();
+    _getUser();
   }
 
   // Load user data from SharedPreferences
@@ -174,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -194,55 +202,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child:
-          Column(
+        body: SingleChildScrollView(
+          child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 60, left: 15),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 15),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
+                ),
+                Expanded(
+                  child: Padding(
+                      padding:
+                          const EdgeInsets.only(top: 60, left: 13, right: 15),
                       child: TextField(
                         style: TextStyle(height: 0.1),
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(width: 0.8),
-                          ),
-                          hintText: 'Search',
-                          prefixIcon: Icon(Icons.search,
-                          size: 30.0,),
-                          suffixIcon: IconButton(icon: Icon(Icons.clear),
-                          onPressed: () {},)),
-                          
-                      )
-                    ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide(width: 0.8),
+                            ),
+                            hintText: 'Search',
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              size: 30.0,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () {},
+                            )),
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
+                  child: IconButton(
+                    icon: Icon(Icons.chat_bubble),
+                    onPressed: () {},
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
-                    child: IconButton(
-                      icon: Icon(Icons.chat_bubble),
-                      onPressed: () {},),
-                  ),
-                ]
-              ),
+                ),
+              ]),
               Stack(
-                children: [                 
+                children: [
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
@@ -272,8 +279,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       child: const CircleAvatar(
                                         radius: 60,
-                                        backgroundImage:
-                                            AssetImage("images/placeholder_image.png"),
+                                        backgroundImage: AssetImage(
+                                            "images/placeholder_image.png"),
                                       ),
                                     ),
                                   ),
@@ -289,14 +296,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20,),
-                        Text(
-                          'AAn Pyongyang',
-                          style: TextStyle(
-                            fontSize: 25, 
-                            fontWeight: FontWeight.bold)
+                        const SizedBox(
+                          height: 20,
                         ),
-                        SizedBox(height: 20),
+                        Text(user!.username,
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 20),
                         Divider(
                           height: 20,
                           thickness: 1,
@@ -309,20 +315,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('ADD FRIEND',
-                              style: TextStyle(fontSize: 20),)
-                            ),
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Text(
+                                  'ADD FRIEND',
+                                  style: TextStyle(fontSize: 20),
+                                )),
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('CHATt',
-                              style: TextStyle(fontSize: 20),)
-                            ),
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Text(
+                                  'CHATt',
+                                  style: TextStyle(fontSize: 20),
+                                )),
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Text('MEETUP',
-                              style: TextStyle(fontSize: 20),)
-                            ),
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Text(
+                                  'MEETUP',
+                                  style: TextStyle(fontSize: 20),
+                                )),
                           ],
                         ),
                         SizedBox(height: 10),
@@ -333,21 +342,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           endIndent: 20,
                           color: Colors.grey,
                         ),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Text('Saya adalah tangan kanan kim jong un'),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Divider(
                           height: 20,
                           thickness: 3,
                           color: Colors.black,
                         ),
-                        SizedBox(height: 20,),
-                        Text(
-                          '10 Favorite Books',
-                          style: TextStyle(
-                            fontSize: 25, 
-                            fontWeight: FontWeight.bold)
+                        SizedBox(
+                          height: 20,
                         ),
+                        Text('10 Favorite Books',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold)),
                         Divider(
                           height: 20,
                           thickness: 4,
@@ -357,19 +369,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 30),
                         IndentedListView(itemList: bookList, indent: 15),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Divider(
                           height: 20,
                           thickness: 3,
                           color: Colors.black,
                         ),
-                        SizedBox(height: 20,),
-                        Text(
-                          'Friends',
-                          style: TextStyle(
-                            fontSize: 25, 
-                            fontWeight: FontWeight.bold)
+                        SizedBox(
+                          height: 20,
                         ),
+                        Text('Friends',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold)),
                         Divider(
                           height: 20,
                           thickness: 4,
@@ -377,78 +390,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           indent: 70,
                           endIndent: 70,
                         ),
-                        SizedBox(height: 20,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Column(
-                                children: [ClipOval(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                Text('User 1')
-                                ]
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Column(
-                                children: [ClipOval(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                Text('User 1')
-                                ]
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Column(
-                                children: [ClipOval(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                Text('User 1')
-                                ]
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 2),
-                              child: Column(
-                                children: [ClipOval(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                Text('User 1')
-                                ]
-                              ),
-                            ),
-                            
-                          ]
+                        SizedBox(
+                          height: 20,
                         ),
-                        SizedBox(height: 30)
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Column(children: [
+                                  ClipOval(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('User 1')
+                                ]),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Column(children: [
+                                  ClipOval(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('User 1')
+                                ]),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Column(children: [
+                                  ClipOval(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('User 1')
+                                ]),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 2),
+                                child: Column(children: [
+                                  ClipOval(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.grey, width: 30),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('User 1')
+                                ]),
+                              ),
+                            ]),
+                        SizedBox(height: 30),
+                        ElevatedButton(
+                            onPressed: () {
+                              FirebaseAuth.instance.signOut;
+                              Navigator.pushReplacementNamed(context, '/');
+                            },
+                            child: const Text('Test'))
                       ],
                     ),
                   )
@@ -457,7 +472,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: CustomNavigationBar(selectedIndex: 3)
-    );
+        bottomNavigationBar: CustomNavigationBar(selectedIndex: 3));
   }
 }

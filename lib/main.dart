@@ -1,17 +1,20 @@
-import 'package:final_project_haijo/screens/categories_screen.dart';
-import 'package:final_project_haijo/screens/editProfile_screen.dart';
-import 'package:final_project_haijo/screens/favorites_screen.dart';
-import 'package:final_project_haijo/screens/main_screen.dart';
-import 'package:final_project_haijo/screens/profile_screen.dart';
-import 'package:final_project_haijo/screens/sign_in_screen.dart';
-import 'package:final_project_haijo/screens/sign_up_screen.dart';
-import 'package:final_project_haijo/screens/splash_screen.dart';
-import 'package:final_project_haijo/screens/userlain_screen.dart';
-import 'package:final_project_haijo/screens/welcome_screen.dart';
+import 'package:final_project_haija/screens/userprofile_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project_haija/screens/categories_screen.dart';
+import 'package:final_project_haija/screens/favorites_screen.dart';
+import 'package:final_project_haija/screens/main_screen.dart';
+import 'package:final_project_haija/screens/sign_in_screen.dart';
+import 'package:final_project_haija/screens/sign_up_screen.dart';
+import 'package:final_project_haija/screens/welcome_screen.dart';
 
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -23,15 +26,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Haijo Library',
+      title: 'Haija Library',
       theme: ThemeData(),
-      home:   UserLainScreen(),
+      home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return MainScreen();
+            } else {
+              return WelcomeScreen();
+            }
+          }),
       routes: {
         // '/homescreen': (context) => const HomeScreen(),
         '/signin': (context) => SignInScreen(),
         '/welcome': (context) => WelcomeScreen(),
         '/signup': (context) => SignUpScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/profile': (context) => UserProfileScreen(),
         '/main': (context) => MainScreen(),
         '/categories': (context) => CategoriesScreen(),
         '/favorite': (context) => FavoritesScreen(),

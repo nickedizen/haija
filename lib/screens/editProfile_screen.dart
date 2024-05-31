@@ -1,51 +1,42 @@
 import 'dart:io';
 
-import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/screens/userprofile_screen.dart';
+import 'package:final_project_haija/services/appuser_service.dart';
+import 'package:final_project_haija/services/location_service.dart';
+import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import '../data/book_data.dart';
-import '../models/book.dart';
-import '../widgets/indented_list_view.dart';
-import '../widgets/profile_info_item.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final AppUser user;
+
+  const EditProfileScreen({required this.user, super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreen();
 }
 
 class _EditProfileScreen extends State<EditProfileScreen> {
-  //TODO: 1. Deklarasikan variabel yang dibutuhkan
-
-  bool isSignedIn = false;
-  String email = '';
-  String userName = '';
-  int favoriteBookCount = 0;
-  final TextEditingController _editedUserNameController =
-      TextEditingController();
-
-  String _imageFile = '';
+  XFile? _imageFile;
   final picker = ImagePicker();
-
-  List<Book> favoriteBooks = [];
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
+  bool _meetUp = false;
+  double? _latitude;
+  double? _longitude;
 
   Future<void> _getImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = pickedFile.path;
+        _imageFile = pickedFile;
       });
     }
-  }
-
-  void _saveProfileImagePath(String path) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('_imageFile', path);
   }
 
   void _showPicker() {
@@ -55,7 +46,7 @@ class _EditProfileScreen extends State<EditProfileScreen> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
+              const ListTile(
                 title: Text(
                   'Image Source',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -80,118 +71,46 @@ class _EditProfileScreen extends State<EditProfileScreen> {
         });
   }
 
+  Future<void> _pickLocation() async {
+    final currentPosition = await LocationService.getCurrentPosition();
+    setState(() {
+      _latitude = currentPosition?.latitude;
+      _longitude = currentPosition?.longitude;
+    });
+  }
+
+  void _saveChanges() async {
+    widget.user.username = usernameController.text;
+    widget.user.profileBio = bioController.text;
+    String? imageUrl;
+    if (_imageFile != null) {
+      imageUrl = await AppUserService.uploadImage(_imageFile!);
+    } else {
+      imageUrl = widget.user.profilePicture;
+    }
+    widget.user.profilePicture = imageUrl;
+    if (_meetUp) {
+      await _pickLocation();
+      widget.user.latitude = _latitude;
+      widget.user.longitude = _longitude;
+    } else {
+      widget.user.latitude = null;
+      widget.user.longitude = null;
+    }
+    AppUserService.updateAppUser(widget.user);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+        ModalRoute.withName('/'));
+  }
+
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    _loadFavoriteBooks();
-  }
-
-  // Load user data from SharedPreferences
-  _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('key')) {
-      String encryptedEmail =
-          prefs.containsKey('email') ? prefs.getString('email') ?? '' : '';
-      String encryptedUserName = prefs.getString('username') ?? '';
-
-      final encrypt.Key key =
-          encrypt.Key.fromBase64(prefs.getString('key') ?? '');
-      final iv = encrypt.IV.fromBase64(prefs.getString('iv') ?? '');
-
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final decryptedUsername = encrypter.decrypt64(encryptedUserName, iv: iv);
-      final decryptedEmail = encrypter.decrypt64(encryptedEmail, iv: iv);
-
-      setState(() {
-        isSignedIn = prefs.getBool('isSignedIn') ?? false;
-        email = decryptedEmail;
-        userName = decryptedUsername;
-      });
-    }
-  }
-
-  void signIn() {
-    Navigator.pushNamed(context, '/signin');
-  }
-
-  // Update SharedPreferences when signing out
-  void signOut() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isSignedIn', false);
-    prefs.setString('email', '');
-    prefs.setString('userName', '');
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.pushReplacementNamed(context, '/');
-    });
-
-    _loadUserData();
-  }
-
-  void editUserName() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit Nama'),
-          content: TextField(
-            controller: _editedUserNameController,
-            decoration: InputDecoration(labelText: 'Input nama'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                if (_editedUserNameController.text.isNotEmpty &&
-                    prefs.containsKey('key') &&
-                    prefs.containsKey('iv')) {
-                  final encrypt.Key key =
-                      encrypt.Key.fromBase64(prefs.getString('key') ?? '');
-                  final iv = encrypt.IV.fromBase64(prefs.getString('iv') ?? '');
-
-                  final encrypter = encrypt.Encrypter(encrypt.AES(key));
-                  final encryptedUsername = encrypter.encrypt(
-                    _editedUserNameController.text,
-                    iv: iv,
-                  );
-
-                  prefs.setString('username', encryptedUsername.base64);
-
-                  // Reload user data to update the state
-                  _loadUserData();
-
-                  Navigator.pop(context);
-                }
-              },
-              child: Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _loadFavoriteBooks() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> favorites = prefs.getStringList('favorite_books') ?? [];
-    setState(() {
-      // favoriteBooks = favorites;
-      favoriteBooks = favorites.map((id) {
-        // Assuming bookList is a list of all available books
-        return bookList.firstWhere((book) => book.title == id);
-      }).toList();
-    });
+    usernameController.text = widget.user.username;
+    bioController.text = widget.user.profileBio ?? '';
+    _latitude = widget.user.latitude;
+    _longitude = widget.user.longitude;
+    _meetUp = widget.user.latitude != null && widget.user.longitude!= null ? true : false;
   }
 
   @override
@@ -210,16 +129,19 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                     },
                   ),
                 ),
-                Padding(
-                    padding: const EdgeInsets.only(top: 60, left: 15),
+                const Padding(
+                    padding: EdgeInsets.only(top: 60, left: 15),
                     child: Text(
                       'Edit Profile',
                       style: TextStyle(fontSize: 25),
                     )),
                 Padding(
                     padding: const EdgeInsets.only(top: 60, left: 7, right: 15),
-                    child:
-                        ElevatedButton(onPressed: () {}, child: Text('Save'))),
+                    child: TextButton(
+                        onPressed: () {
+                          _saveChanges();
+                        },
+                        child: const Text('Save'))),
               ]),
               Stack(
                 children: [
@@ -227,23 +149,31 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        //TODO: 2. Buat bagian ProfileHeader yang berisi gambar profil
                         Align(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 30),
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                if (_imageFile.isNotEmpty)
+                                if (_imageFile != null)
                                   ClipOval(
                                     child: Image.file(
-                                      File(_imageFile),
+                                      File(_imageFile!.path),
                                       height: 100,
+                                      width: 100,
                                       fit: BoxFit.cover,
                                     ),
                                   )
-                                else
-                                  ClipOval(
+                                else (widget.user.profilePicture != null && Uri.parse(widget.user.profilePicture!).isAbsolute
+                                  ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: widget.user.profilePicture!,
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover
+                                    ),
+                                  )
+                                  : ClipOval(
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
@@ -256,23 +186,22 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                                             "images/placeholder_image.png"),
                                       ),
                                     ),
+                                  )),
+                                IconButton(
+                                  onPressed: _showPicker,
+                                  icon: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.deepPurple[50],
                                   ),
-                                if (isSignedIn)
-                                  IconButton(
-                                    onPressed: _showPicker,
-                                    icon: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.deepPurple[50],
-                                    ),
-                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
@@ -287,13 +216,13 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 16.0),
                           child: TextField(
-                            controller: _editedUserNameController,
+                            controller: usernameController,
                             decoration:
-                                InputDecoration(labelText: 'Input nama'),
+                                const InputDecoration(hintText: 'Input nama'),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Row(
+                        const SizedBox(height: 20),
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
@@ -308,12 +237,27 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 16.0),
                           child: TextField(
-                            controller: _editedUserNameController,
+                            controller: bioController,
                             decoration:
-                                InputDecoration(labelText: 'Input Bio'),
+                                const InputDecoration(hintText: 'Input Bio'),
                           ),
                         ),
-                        SizedBox(height: 30,),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        SwitchListTile(
+                          title: const Text(
+                            'Izinkan Meetup',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          value: _meetUp,
+                          onChanged: (value) {
+                            setState(() {
+                              _meetUp = value;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   )

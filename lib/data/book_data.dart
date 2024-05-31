@@ -1,4 +1,4 @@
-import 'package:final_project_haijo/models/book.dart';
+import 'package:final_project_haija/models/book.dart';
 
 var bookList = [
   Book(

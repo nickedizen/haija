@@ -1,6 +1,6 @@
-import 'package:final_project_haijo/data/book_data.dart';
-import 'package:final_project_haijo/models/book.dart';
-import 'package:final_project_haijo/widgets/book_card.dart';
+import 'package:final_project_haija/data/book_data.dart';
+import 'package:final_project_haija/models/book.dart';
+import 'package:final_project_haija/widgets/book_card.dart';
 import 'package:flutter/material.dart';
 
 class FilteredScreen extends StatefulWidget {

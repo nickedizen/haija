@@ -1,7 +1,9 @@
+import 'package:final_project_haija/screens/main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:final_project_haija/models/app_user.dart';
 
 class SignInScreen extends StatefulWidget {
   SignInScreen({super.key});
@@ -11,82 +13,25 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   String _errorText = '';
-  bool _isSignedIn = false;
   bool _obscurePassword = true;
-
-  Future<Map<String, String>> _retrieveAndDecryptDataFromPrefs(
-    Future<SharedPreferences> prefs,
-  ) async {
-    final sharedPreferences = await prefs;
-    final encryptedUsername = sharedPreferences.getString('username') ?? '';
-    final encryptedEmail = sharedPreferences.getString('email') ?? '';
-    final encryptedPassword = sharedPreferences.getString('password') ?? '';
-    final keyString = sharedPreferences.getString('key') ?? '';
-    final ivString = sharedPreferences.getString('iv') ?? '';
-
-    final encrypt.Key key = encrypt.Key.fromBase64(keyString);
-    final iv = encrypt.IV.fromBase64(ivString);
-
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final decryptedUsername = encrypter.decrypt64(encryptedUsername, iv: iv);
-    final decryptedEmail = encrypter.decrypt64(encryptedEmail, iv: iv);
-    final decryptedPassword = encrypter.decrypt64(encryptedPassword, iv: iv);
-
-    // Return decrypted data
-    return {
-      'username': decryptedUsername,
-      'email': decryptedEmail,
-      'password': decryptedPassword,
-    };
-  }
 
   void _signIn() async {
     try {
-      final Future<SharedPreferences> prefsFuture =
-          SharedPreferences.getInstance();
-      final String userInput = _usernameController.text;
-      final String password = _passwordController.text;
-
-      if (userInput.isNotEmpty && password.isNotEmpty) {
-        final SharedPreferences prefs = await prefsFuture;
-        final data = await _retrieveAndDecryptDataFromPrefs(prefsFuture);
-
-        if (data.isNotEmpty) {
-          final decryptedUsername = data['username'];
-          final decryptedEmail = data['email'];
-          final decryptedPassword = data['password'];
-
-          if ((userInput == decryptedUsername || userInput == decryptedEmail) &&
-              password == decryptedPassword) {
-            _errorText = '';
-            _isSignedIn = true;
-            prefs.setBool('isSignedIn', true);
-            // Pemanggilan untuk menghapus semua halaman dalam tumpukan navigasi
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            });
-            // Sign in berhasil, navigasikan ke layar utama
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.pushReplacementNamed(context, '/main');
-            });
-            print('Sign in succeeded');
-          } else {
-            setState(() {
-              _errorText = 'Username/email dan Password salah';
-            });
-          }
-        }
-      } else {
-        setState(() {
-          _errorText = 'Username/email and password cannot be empty';
-        });
-      }
-    } catch (e) {
-      print('An error occurred: $e');
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text, 
+        password: _passwordController.text
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MainScreen())
+      );
+    } catch (error) {
+      setState(() {
+        _errorText = error.toString();
+      });
     }
   }
 
@@ -110,9 +55,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Text('Please fill your details to log in'),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: _usernameController,
+                    controller: _emailController,
                     decoration: const InputDecoration(
-                      labelText: "Username/email",
+                      labelText: "E-mail",
                       border: OutlineInputBorder(),
                     ),
                   ),

@@ -1,4 +1,4 @@
-import 'package:final_project_haijo/screens/welcome_screen.dart';
+import 'package:final_project_haija/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
