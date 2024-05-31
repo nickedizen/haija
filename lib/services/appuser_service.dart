@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class AppUserService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
   static final CollectionReference _appUserCollection =
       _database.collection('app-users');
+  static final _storage = FirebaseStorage.instance;
   static final userId = FirebaseAuth.instance.currentUser!.uid;
   static final userDoc = _appUserCollection.doc(userId);
 
@@ -46,5 +53,25 @@ class AppUserService {
         latitude: userData['latitude'],
         longitude: userData['longitude'],
         favoriteBooks: userData['favoriteBooks']);
+  }
+
+    static Future<String?> uploadImage(XFile imageFile) async {
+    try {
+      String fileName = path.basename(imageFile.path);
+      Reference ref = _storage.ref().child('images/$fileName');
+
+      UploadTask uploadTask;
+      if (kIsWeb) {
+        uploadTask = ref.putData(await imageFile.readAsBytes());
+      } else {
+        uploadTask = ref.putFile(File(imageFile.path));
+      }
+
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      return null;
+    }
   }
 }

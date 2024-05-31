@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project_haija/models/app_user.dart';
 import 'package:final_project_haija/screens/userprofile_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
@@ -21,7 +22,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreen extends State<EditProfileScreen> {
-  String _imageFile = '';
+  XFile? _imageFile;
   final picker = ImagePicker();
   TextEditingController usernameController = TextEditingController();
   TextEditingController bioController = TextEditingController();
@@ -33,14 +34,9 @@ class _EditProfileScreen extends State<EditProfileScreen> {
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = pickedFile.path;
+        _imageFile = pickedFile;
       });
     }
-  }
-
-  void _saveProfileImagePath(String path) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('_imageFile', path);
   }
 
   void _showPicker() {
@@ -86,7 +82,13 @@ class _EditProfileScreen extends State<EditProfileScreen> {
   void _saveChanges() async {
     widget.user.username = usernameController.text;
     widget.user.profileBio = bioController.text;
-    widget.user.profilePicture = _imageFile;
+    String? imageUrl;
+    if (_imageFile != null) {
+      imageUrl = await AppUserService.uploadImage(_imageFile!);
+    } else {
+      imageUrl = widget.user.profilePicture;
+    }
+    widget.user.profilePicture = imageUrl;
     if (_meetUp) {
       await _pickLocation();
       widget.user.latitude = _latitude;
@@ -106,9 +108,9 @@ class _EditProfileScreen extends State<EditProfileScreen> {
     super.initState();
     usernameController.text = widget.user.username;
     bioController.text = widget.user.profileBio ?? '';
-    _imageFile = widget.user.profilePicture ?? '';
     _latitude = widget.user.latitude;
     _longitude = widget.user.longitude;
+    _meetUp = widget.user.latitude != null && widget.user.longitude!= null ? true : false;
   }
 
   @override
@@ -153,16 +155,25 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                if (_imageFile.isNotEmpty)
+                                if (_imageFile != null)
                                   ClipOval(
                                     child: Image.file(
-                                      File(_imageFile),
+                                      File(_imageFile!.path),
                                       height: 100,
+                                      width: 100,
                                       fit: BoxFit.cover,
                                     ),
                                   )
-                                else
-                                  ClipOval(
+                                else (widget.user.profilePicture != null && Uri.parse(widget.user.profilePicture!).isAbsolute
+                                  ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: widget.user.profilePicture!,
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover
+                                    ),
+                                  )
+                                  : ClipOval(
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
@@ -175,7 +186,7 @@ class _EditProfileScreen extends State<EditProfileScreen> {
                                             "images/placeholder_image.png"),
                                       ),
                                     ),
-                                  ),
+                                  )),
                                 IconButton(
                                   onPressed: _showPicker,
                                   icon: Icon(

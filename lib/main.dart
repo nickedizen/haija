@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:final_project_haija/screens/categories_screen.dart';
 import 'package:final_project_haija/screens/favorites_screen.dart';
 import 'package:final_project_haija/screens/main_screen.dart';
-import 'package:final_project_haija/screens/userlainprofile_screen.dart';
 import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:final_project_haija/screens/sign_up_screen.dart';
 import 'package:final_project_haija/screens/welcome_screen.dart';

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project_haija/models/app_user.dart';
 import 'package:final_project_haija/screens/editProfile_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
@@ -263,13 +264,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                if (user!.profilePicture != null ||
-                                    user!.profilePicture != '')
+                                if (user!.profilePicture != null && Uri.parse(user!.profilePicture!).isAbsolute)
                                   ClipOval(
-                                    child: Image.file(
-                                      File(user!.profilePicture!),
+                                    child: CachedNetworkImage(
+                                      imageUrl: user!.profilePicture!,
                                       height: 100,
-                                      fit: BoxFit.cover,
+                                      width: 100,
+                                      fit: BoxFit.cover
                                     ),
                                   )
                                 else
@@ -285,14 +286,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                         backgroundImage: AssetImage(
                                             "images/placeholder_image.png"),
                                       ),
-                                    ),
-                                  ),
-                                if (isSignedIn)
-                                  IconButton(
-                                    onPressed: _showPicker,
-                                    icon: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.deepPurple[50],
                                     ),
                                   ),
                               ],
