@@ -67,7 +67,7 @@ class IndentedListView extends StatelessWidget {
                             height: 5,
                           ),
                           Text(
-                              book.author,
+                              'book.author',
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 11

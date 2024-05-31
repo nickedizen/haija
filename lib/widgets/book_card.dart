@@ -66,7 +66,7 @@ class BookCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16, bottom: 8),
                       child: Text(
-                        book.author,
+                        'book.author',
                         style: const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     )

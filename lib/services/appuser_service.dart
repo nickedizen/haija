@@ -58,7 +58,7 @@ class AppUserService {
     static Future<String?> uploadImage(XFile imageFile) async {
     try {
       String fileName = path.basename(imageFile.path);
-      Reference ref = _storage.ref().child('images/$fileName');
+      Reference ref = _storage.ref().child('profile-pictures/$fileName');
 
       UploadTask uploadTask;
       if (kIsWeb) {
