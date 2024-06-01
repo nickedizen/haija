@@ -57,4 +57,12 @@ class AuthorService {
       return null;
     }
   }
+
+  static Future<String> getAuthorName(String authorId) async {
+    final snapshot = await _authorCollection.doc(authorId).get();
+    Author tempAuthor = Author(
+      authorName: snapshot['authorName'],
+    );
+    return tempAuthor.authorName;
+  }
 }

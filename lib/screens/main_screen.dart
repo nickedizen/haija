@@ -8,6 +8,7 @@ import 'package:final_project_haija/screens/search_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/indented_list_view.dart';
+import 'package:final_project_haija/widgets/new_indented_list.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -20,6 +21,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   String? currentUserStatus;
   int currentPageIndex = 0;
+
+
   List<Book> latestBooks = bookList.where((item) =>
       item.publishedDate.isAfter(DateTime(2023)) &&
       item.publishedDate.isBefore(DateTime.now())).toList();
@@ -124,7 +127,7 @@ class _MainScreenState extends State<MainScreen> {
                     ],
                   ),
                 ),
-                IndentedListView(itemList: bookList, indent: 15),
+                const NewIndentedListView(),
 
                 const SizedBox(height: 25),
 

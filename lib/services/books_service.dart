@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/books.dart';
+import 'package:final_project_haija/models/review.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class BooksService {
   static Future<String?> uploadImage(XFile imageFile) async {
     try {
       String fileName = path.basename(imageFile.path);
-      Reference ref = _storage.ref().child('profile-pictures/$fileName');
+      Reference ref = _storage.ref().child('book-covers/$fileName');
 
       UploadTask uploadTask;
       if (kIsWeb) {
@@ -60,5 +61,23 @@ class BooksService {
     } catch (e) {
       return null;
     }
+  }
+  static Stream<List<Books>> getBooksList() {
+    return _booksCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Books(
+          title: data['title'],
+          author: data['author'] != null ? (data['author'] as List<dynamic>).cast<String>() : [],
+          publishedDate: (data['publishedDate'] as Timestamp).toDate(),
+          rating: data['rating'] != null ? data['rating'] as double : null,
+          description: data['description'],
+          genre: data['genre'] != null ? (data['genre'] as List<dynamic>).cast<String>() : [],
+          imageAsset: data['imageAsset'],
+          reviews: data['reviews'] != null ? (data['reviews'] as List<dynamic>).cast<Review>() : [],
+          idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>() : [],
+        );
+      }).toList();
+    });
   }
 }

@@ -3,13 +3,13 @@ import 'package:final_project_haija/models/author.dart';
 import 'package:final_project_haija/models/review.dart';
 
 class Books {
-  final String title;
-  final List<String> author;
+  String title;
+  List<String> author;
   final DateTime publishedDate;
   double? rating;
-  final String description;
-  final List<String> genre;
-  final String imageAsset;
+  String description;
+  List<String> genre;
+  String imageAsset;
   List<Review>? reviews;
   List<String>? idOfUsersLikeThisBook;
 

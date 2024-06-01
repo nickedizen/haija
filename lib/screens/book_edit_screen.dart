@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/books.dart';
+import 'package:final_project_haija/services/author_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +38,19 @@ class _BookEditScreenState extends State<BookEditScreen> {
     if (widget.book != null) {
       _titleController.text = widget.book!.title;
       _descriptionController.text = widget.book!.description;
+      _selectedAuthorId = widget.book!.author;
+      _selectedGenre = widget.book!.genre;
+      _fillAuthorNameList();
     }
     _getAuthorList();
     _getGenres();
+  }
+
+  Future<void> _fillAuthorNameList() async {
+    for (var authorId in _selectedAuthorId) {
+      var authorName = await AuthorService.getAuthorName(authorId);
+      _selectedAuthorName.add(authorName);
+    }
   }
 
   Future<void> _pickImage() async {
@@ -178,15 +189,14 @@ Future<void> _getAuthorList() async {
   }
 
   void _saveChanges() async {
+    String? imageUrl;
+    if (_imageFile != null) {
+      imageUrl = await BooksService.uploadImage(_imageFile!);
+    } else {
+      imageUrl = widget.book!.imageAsset;
+    }
+
     if (widget.book == null) {
-      String? imageUrl;
-
-      if (_imageFile != null) {
-        imageUrl = await BooksService.uploadImage(_imageFile!);
-      } else {
-        imageUrl = widget.book!.imageAsset;
-      }
-
       Books newBook = Books(
         title: _titleController.text,
         author: _selectedAuthorId,
@@ -197,6 +207,12 @@ Future<void> _getAuthorList() async {
       );
 
       BooksService.addNewBook(newBook, context);
+    } else {
+        widget.book!.title = _titleController.text;
+        widget.book!.author = _selectedAuthorId;
+        widget.book!.genre = _selectedGenre;
+        widget.book!.description = _descriptionController.text;
+        widget.book!.imageAsset = imageUrl!;
     }
   }
 
@@ -279,7 +295,7 @@ Future<void> _getAuthorList() async {
                               fit: BoxFit.cover,
                             ))
                   : (widget.book?.imageAsset != null &&
-                          Uri.parse(widget.book!.imageAsset!).isAbsolute
+                          Uri.parse(widget.book!.imageAsset).isAbsolute
                       ? AspectRatio(
                           aspectRatio: 1 / 1.5,
                           child: CachedNetworkImage(
