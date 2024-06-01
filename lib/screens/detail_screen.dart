@@ -137,7 +137,7 @@ class _MainScreenState extends State<DetailScreen> {
                         Padding(
                             padding: EdgeInsets.only(top: 10, left: 27),
                             child: Text(
-                              widget.book.author,
+                              'author',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                               textAlign: TextAlign.left,

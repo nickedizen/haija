@@ -55,7 +55,7 @@ class AppUserService {
         favoriteBooks: userData['favoriteBooks']);
   }
 
-    static Future<String?> uploadImage(XFile imageFile) async {
+  static Future<String?> uploadImage(XFile imageFile) async {
     try {
       String fileName = path.basename(imageFile.path);
       Reference ref = _storage.ref().child('profile-pictures/$fileName');
@@ -73,5 +73,11 @@ class AppUserService {
     } catch (e) {
       return null;
     }
+  }
+
+  static Future<String> getUserStatus() async {
+    final userSnapshot = await userDoc.get();
+    final userData = userSnapshot.data() as Map<String, dynamic>;
+    return userData['status'];
   }
 }
