@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "492124147947",
+    "project_id": "haija-library",
+    "storage_bucket": "haija-library.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:492124147947:android:95ffc58fa331ca2c05eeae",
+        "android_client_info": {
+          "package_name": "com.example.final_project_haijo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2OI9LdHQBpj4kQ8vw4icjmq3Ny3HYjZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

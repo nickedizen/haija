@@ -1,6 +1,6 @@
-import 'package:final_project_haijo/data/book_data.dart';
-import 'package:final_project_haijo/models/book.dart';
-import 'package:final_project_haijo/widgets/book_card.dart';
+import 'package:final_project_haija/data/book_data.dart';
+import 'package:final_project_haija/models/book.dart';
+import 'package:final_project_haija/widgets/book_card.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -20,22 +20,22 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     _searchController.text = widget.searchQuery;
-    _filterBooks(widget.searchQuery);
+    // _filterBooks(widget.searchQuery);
     super.initState();
   }
 
-  void _filterBooks(String search) {
-    List<Book> filtered = [];
-    filtered.addAll(bookList.where((book) {
-      return book.title.toLowerCase().contains(search.toLowerCase()) ||
-      book.author.toLowerCase().contains(search.toLowerCase());
-    }));
-    setState(() {
-      _searchQuery = search;
-      _filteredBooks.clear();
-      _filteredBooks.addAll(filtered);
-    });
-  }
+  // void _filterBooks(String search) {
+  //   List<Book> filtered = [];
+  //   filtered.addAll(bookList.where((book) {
+  //     return book.title.toLowerCase().contains(search.toLowerCase()) ||
+  //     book.author.toLowerCase().contains(search.toLowerCase());
+  //   }));
+  //   setState(() {
+  //     _searchQuery = search;
+  //     _filteredBooks.clear();
+  //     _filteredBooks.addAll(filtered);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       TextField(
 
                         controller: _searchController,
-                        onChanged: _filterBooks,
+                        // onChanged: _filterBooks,
                         decoration: InputDecoration(
                           hintText: 'Search title/author',
                           prefixIcon: const Icon(

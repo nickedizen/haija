@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:final_project_haijo/models/book.dart';
-import 'package:final_project_haijo/screens/detail_screen.dart';
+import 'package:final_project_haija/models/book.dart';
+import 'package:final_project_haija/screens/detail_screen.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
@@ -66,7 +66,7 @@ class BookCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16, bottom: 8),
                       child: Text(
-                        book.author,
+                        'book.author',
                         style: const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     )

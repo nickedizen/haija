@@ -1,6 +1,7 @@
+import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/services/appuser_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,7 +15,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   String _usernameErrorText = '';
   String _emailErrorText = '';
@@ -24,9 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  //TODO: 1. Membuat Method _signUp
   void _signUp() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String username = _usernameController.text.trim();
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
@@ -57,7 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _usernameErrorText = '';
         _emailErrorText = '';
         _passwordErrorText =
-        'Minimal 8 karakter, kombinasi [A-Z], [a-z], [0-9], [!@#\\\$%^&*(),.?":{}|<>]';
+            'Minimal 8 karakter, kombinasi [A-Z], [a-z], [0-9], [!@#\\\$%^&*(),.?":{}|<>]';
         _confirmPasswordErrorText = '';
       });
       return;
@@ -71,38 +70,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    // TODO: 3. Jika name, username, password tidak kosong lakukan enkripsi
     if (username.isNotEmpty &&
         email.isNotEmpty &&
         password.isNotEmpty &&
         confirmPassword.isNotEmpty) {
-      final encrypt.Key key = encrypt.Key.fromLength(32);
-      final iv = encrypt.IV.fromLength(16);
+      FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      )
+          .then((userCredential) {
+        AppUserService.addNewAppUser(AppUser(username: username));
+        FirebaseAuth.instance.signOut();
+        Navigator.pushReplacementNamed(context, '/signin');
+      }).catchError((error) {
+        String errorText = error.toString();
+        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorText)),
+        );
+      });
 
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final encryptedUserName = encrypter.encrypt(username, iv: iv);
-      final encryptedEmail = encrypter.encrypt(email, iv: iv);
-      final encryptedPassword = encrypter.encrypt(password, iv: iv);
-      final encryptedconfirmPassword =
-      encrypter.encrypt(confirmPassword, iv: iv);
-
-      prefs.setString('username', encryptedUserName.base64);
-      prefs.setString('email', encryptedEmail.base64);
-      prefs.setString('password', encryptedPassword.base64);
-      prefs.setString('confirmPassword', encryptedconfirmPassword.base64);
-      prefs.setString('key', key.base64);
-      prefs.setString('iv', iv.base64);
+      setState(() {
+        _usernameErrorText = '';
+        _emailErrorText = '';
+        _passwordErrorText = '';
+        _confirmPasswordErrorText = '';
+      });
     }
-
-    setState(() {
-      _usernameErrorText = '';
-      _emailErrorText = '';
-      _passwordErrorText = '';
-      _confirmPasswordErrorText = '';
-    });
-
-    //buat navigasi ke SignUpScreen
-    Navigator.pushReplacementNamed(context, '/signin');
   }
 
   //TODO: 2. Membuat method dispose
@@ -142,17 +137,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: InputDecoration(
                   labelText: 'Username',
                   errorText:
-                  _usernameErrorText.isNotEmpty ? _usernameErrorText : null,
+                      _usernameErrorText.isNotEmpty ? _usernameErrorText : null,
                   border: const OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   errorText:
-                  _emailErrorText.isNotEmpty ? _emailErrorText : null,
+                      _emailErrorText.isNotEmpty ? _emailErrorText : null,
                   border: const OutlineInputBorder(),
                 ),
               ),
@@ -162,7 +157,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   errorText:
-                  _passwordErrorText.isNotEmpty ? _passwordErrorText : null,
+                      _passwordErrorText.isNotEmpty ? _passwordErrorText : null,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     onPressed: () {
@@ -203,7 +198,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 obscureText: _obscureConfirmPassword,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Register button
               ElevatedButton(
                 onPressed: _signUp,

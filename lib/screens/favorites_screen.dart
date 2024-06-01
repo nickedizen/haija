@@ -1,4 +1,4 @@
-import 'package:final_project_haijo/widgets/custom_navigation_bar.dart';
+import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
