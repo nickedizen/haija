@@ -1,13 +1,11 @@
-import 'package:final_project_haija/data/book_data.dart';
+import 'package:final_project_haija/models/books.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:final_project_haija/models/book.dart';
 
 class DetailScreen extends StatefulWidget {
-  final Book book;
+  final Books book;
   const DetailScreen({super.key, required this.book});
-  
 
   @override
   State<DetailScreen> createState() => _MainScreenState();

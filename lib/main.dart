@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project_haija/screens/categories_screen.dart';
-import 'package:final_project_haija/screens/favorites_screen.dart';
 import 'package:final_project_haija/screens/main_screen.dart';
 import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:final_project_haija/screens/sign_up_screen.dart';
@@ -45,7 +44,6 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => UserProfileScreen(),
         '/main': (context) => MainScreen(),
         '/categories': (context) => CategoriesScreen(),
-        '/favorite': (context) => FavoritesScreen(),
       },
     );
   }

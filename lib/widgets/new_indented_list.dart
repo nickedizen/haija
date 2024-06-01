@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:final_project_haija/screens/detail_screen.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,9 @@ class NewIndentedListView extends StatelessWidget {
                 shrinkWrap: true,
                 children: snapshot.data!.map((document) {
                   List<String> name = [];
+                  if (document.author.isNotEmpty) {
                     name = document.author[0].split('-');
+                  }
                   return Stack(
                     children: [
                       Card(
@@ -49,7 +52,9 @@ class NewIndentedListView extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                      document.genre[0],
+                                      document.genre.isNotEmpty
+                                      ? document.genre[0]
+                                      : '',
                                       style: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 10
@@ -69,7 +74,9 @@ class NewIndentedListView extends StatelessWidget {
                                     height: 5,
                                   ),
                                   Text(
-                                      name[0],
+                                      name.isNotEmpty 
+                                      ? name[0]
+                                      : '',
                                       style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 11
@@ -88,7 +95,11 @@ class NewIndentedListView extends StatelessWidget {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => DetailScreen(book: document))
+                              );
+                            },
                             borderRadius: const BorderRadius.all(Radius.circular(10)),
                           ),
                         ),

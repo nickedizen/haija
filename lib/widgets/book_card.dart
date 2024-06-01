@@ -1,9 +1,10 @@
+import 'package:final_project_haija/models/books.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project_haija/models/book.dart';
 import 'package:final_project_haija/screens/detail_screen.dart';
 
 class BookCard extends StatelessWidget {
-  final Book book;
+  final Books book;
   const BookCard({super.key, required this.book});
 
   @override

@@ -87,10 +87,10 @@ class IndentedListView extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DetailScreen(book: itemList[index])),
-                    ),
+                    // onTap: () => Navigator.push(
+                    //   // context,
+                    //   // MaterialPageRoute(builder: (context) => DetailScreen(book: itemList[index])),
+                    // ),
                     borderRadius: const BorderRadius.all(Radius.circular(5)),
                   ),
                 ),

@@ -118,9 +118,9 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'All Books', list: bookList)));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'All Books', list: bookList)));
                           },
                           child: const Text('see more')
                       )
@@ -146,9 +146,9 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Latest Books', list: latestBooks)));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Latest Books', list: latestBooks)));
                           },
                           child: const Text('see more')
                       )
@@ -174,9 +174,9 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       TextButton(
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Upcoming Books', list: upcomingBooks)));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Upcoming Books', list: upcomingBooks)));
                           },
                           child: const Text('see more')
                       )
