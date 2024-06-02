@@ -1,19 +1,17 @@
 import 'dart:io';
-
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/screens/google_maps_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:url_launcher/url_launcher.dart';
 import '../data/book_data.dart';
 import '../models/book.dart';
 import '../widgets/indented_list_view.dart';
-import '../widgets/profile_info_item.dart';
 
 class UserLainProfileScreen extends StatefulWidget {
   const UserLainProfileScreen({super.key});
@@ -33,6 +31,19 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
   String _imageFile = '';
   final picker = ImagePicker();
   List<Book> favoriteBooks = [];
+
+  Future<void> _launchMaps(double latitude, double longitude) async {
+    Uri googleUrl = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+    try {
+      if (!await launchUrl(googleUrl)) {
+        throw 'Could not launch $googleUrl';
+      }
+    } catch (e) {
+      print('Could not open the map: $e');
+      // Optionally, show a message to the user
+    }
+  }
 
   void _getUser() async {
     final appUser = await AppUserService.getAppUserData();
@@ -194,7 +205,6 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favorites = prefs.getStringList('favorite_books') ?? [];
     setState(() {
-      // favoriteBooks = favorites;
       favoriteBooks = favorites.map((id) {
         // Assuming bookList is a list of all available books
         return bookList.firstWhere((book) => book.title == id);
@@ -254,7 +264,7 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        //TODO: 2. Buat bagian ProfileHeader yang berisi gambar profil
+                        // ProfileHeader section
                         Align(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 30),
@@ -299,7 +309,7 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Text(user!.username,
+                        Text(user?.username ?? 'Username',
                             style: TextStyle(
                                 fontSize: 25, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 20),
@@ -323,14 +333,31 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                             Padding(
                                 padding: const EdgeInsets.only(bottom: 2),
                                 child: Text(
-                                  'CHATt',
+                                  'CHAT',
                                   style: TextStyle(fontSize: 20),
                                 )),
                             Padding(
                                 padding: const EdgeInsets.only(bottom: 2),
-                                child: Text(
-                                  'MEETUP',
-                                  style: TextStyle(fontSize: 20),
+                                child: TextButton(
+                                  onPressed: () {
+                                    if (user != null &&
+                                        user!.latitude != null &&
+                                        user!.longitude != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => GoogleMapsScreen(
+                                            latitude: user!.latitude!,
+                                            longitude: user!.longitude!,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: const Text(
+                                    'MEETUP',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                 )),
                           ],
                         ),
@@ -460,10 +487,10 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                         SizedBox(height: 30),
                         ElevatedButton(
                             onPressed: () {
-                              FirebaseAuth.instance.signOut;
+                              FirebaseAuth.instance.signOut();
                               Navigator.pushReplacementNamed(context, '/');
                             },
-                            child: const Text('Test'))
+                            child: const Text('Sign Out'))
                       ],
                     ),
                   )
