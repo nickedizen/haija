@@ -2,15 +2,17 @@ import 'package:final_project_haija/models/book.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
+  String? userId;
   String status;
   String username;
   String? profilePicture;
   String? profileBio;
   double? latitude;
   double? longitude;
-  List<Book>? favoriteBooks;
+  List<String>? favoriteBooks;
 
   AppUser({
+    this.userId,
     this.status = 'user',
     required this.username,
     this.profilePicture,
@@ -23,6 +25,7 @@ class AppUser {
   factory AppUser.fromDocument(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return AppUser(
+      userId: data['userId'],
       status: data['status'],
       username: data['username'],
       profilePicture: data['profilePicture'],
@@ -35,6 +38,7 @@ class AppUser {
 
   Map<String, dynamic> toDocument() {
     return {
+      'userId': userId,
       'status': status,
       'username': username,
       'profilePicture': profilePicture,

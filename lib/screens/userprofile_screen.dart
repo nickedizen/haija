@@ -2,9 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/screens/editProfile_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
+import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
+import 'package:final_project_haija/widgets/new_indented_list.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -25,6 +29,8 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   AppUser? user;
+  String userId = FirebaseAuth.instance.currentUser!.uid;
+  Stream<Books>? favoriteBooksId;
   bool isSignedIn = false;
   String email = '';
   String userName = '';
@@ -35,7 +41,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   String _imageFile = '';
   final picker = ImagePicker();
 
-  List<Book> favoriteBooks = [];
 
   void _getUser() async {
     final appUser = await AppUserService.getAppUserData();
@@ -93,116 +98,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    _loadFavoriteBooks();
     _getUser();
-  }
-
-  // Load user data from SharedPreferences
-  _loadUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('key')) {
-      String encryptedEmail =
-          prefs.containsKey('email') ? prefs.getString('email') ?? '' : '';
-      String encryptedUserName = prefs.getString('username') ?? '';
-
-      final encrypt.Key key =
-          encrypt.Key.fromBase64(prefs.getString('key') ?? '');
-      final iv = encrypt.IV.fromBase64(prefs.getString('iv') ?? '');
-
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final decryptedUsername = encrypter.decrypt64(encryptedUserName, iv: iv);
-      final decryptedEmail = encrypter.decrypt64(encryptedEmail, iv: iv);
-
-      setState(() {
-        isSignedIn = prefs.getBool('isSignedIn') ?? false;
-        email = decryptedEmail;
-        userName = decryptedUsername;
-      });
-    }
-  }
-
-  void signIn() {
-    Navigator.pushNamed(context, '/signin');
-  }
-
-  // Update SharedPreferences when signing out
-  void signOut() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isSignedIn', false);
-    prefs.setString('email', '');
-    prefs.setString('userName', '');
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.pushReplacementNamed(context, '/');
-    });
-
-    _loadUserData();
-  }
-
-  void editUserName() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit Nama'),
-          content: TextField(
-            controller: _editedUserNameController,
-            decoration: InputDecoration(labelText: 'Input nama'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                if (_editedUserNameController.text.isNotEmpty &&
-                    prefs.containsKey('key') &&
-                    prefs.containsKey('iv')) {
-                  final encrypt.Key key =
-                      encrypt.Key.fromBase64(prefs.getString('key') ?? '');
-                  final iv = encrypt.IV.fromBase64(prefs.getString('iv') ?? '');
-
-                  final encrypter = encrypt.Encrypter(encrypt.AES(key));
-                  final encryptedUsername = encrypter.encrypt(
-                    _editedUserNameController.text,
-                    iv: iv,
-                  );
-
-                  prefs.setString('username', encryptedUsername.base64);
-
-                  // Reload user data to update the state
-                  _loadUserData();
-
-                  Navigator.pop(context);
-                }
-              },
-              child: Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _loadFavoriteBooks() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> favorites = prefs.getStringList('favorite_books') ?? [];
-    setState(() {
-      // favoriteBooks = favorites;
-      favoriteBooks = favorites.map((id) {
-        // Assuming bookList is a list of all available books
-        return bookList.firstWhere((book) => book.title == id);
-      }).toList();
-    });
   }
 
   @override
@@ -264,7 +160,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                if (user!.profilePicture != null && Uri.parse(user!.profilePicture!).isAbsolute)
+                                if (user?.profilePicture != null && Uri.parse(user!.profilePicture!).isAbsolute)
                                   ClipOval(
                                     child: CachedNetworkImage(
                                       imageUrl: user!.profilePicture!,
@@ -295,7 +191,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        Text(user!.username,
+                        if (user != null)
+                          Text(user!.username,
                             style: TextStyle(
                                 fontSize: 25, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 20),
@@ -311,11 +208,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             TextButton(
-                              onPressed: () =>
+                              onPressed: () {
+                                if (user != null) {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => EditProfileScreen(
                                             user: user!,
-                                          ))),
+                                          )));
+                                }
+                              },
                               child: const Text(
                                 'EDIT PROFILE',
                                 style: TextStyle(fontSize: 20),
@@ -334,7 +234,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        Text(user!.profileBio ?? ''),
+                        if (user != null)
+                          Text(user!.profileBio ?? ''),
                         SizedBox(
                           height: 20,
                         ),
@@ -346,7 +247,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        Text('10 Favorite Books',
+                        Text('Favorite Books',
                             style: TextStyle(
                                 fontSize: 25, fontWeight: FontWeight.bold)),
                         Divider(
@@ -357,7 +258,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           endIndent: 70,
                         ),
                         SizedBox(height: 30),
-                        IndentedListView(itemList: bookList, indent: 15),
+                        NewIndentedListView(function: BooksService.getUserFavoriteBooksStream(userId)),
                         SizedBox(
                           height: 20,
                         ),

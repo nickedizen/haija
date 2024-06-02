@@ -136,7 +136,7 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
       comment: _reviewText,
       reviewDate: DateTime.now(),
     );
-    await ReviewService.addNewReviewToBook(widget.book.id, review);
+    await ReviewService.addNewReviewToBook(widget.book.idBook!, review);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Review has been added.'),

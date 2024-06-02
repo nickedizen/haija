@@ -5,10 +5,13 @@ import 'package:final_project_haija/screens/book_edit_screen.dart';
 import 'package:final_project_haija/screens/filtered_screen.dart';
 import 'package:final_project_haija/screens/genre_create_screen.dart';
 import 'package:final_project_haija/screens/search_screen.dart';
+import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
+import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/indented_list_view.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -99,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
                               Navigator.of(context).push(MaterialPageRoute(builder: (context) => const GenreCreateScreen()));
                             },
                             child: const Text('Create New Genre Data')
-                          ),
+                      ),
                     ],
                   ),
 
@@ -127,7 +130,7 @@ class _MainScreenState extends State<MainScreen> {
                     ],
                   ),
                 ),
-                const NewIndentedListView(),
+                NewIndentedListView(function: BooksService.getBooksList(),),
 
                 const SizedBox(height: 25),
 

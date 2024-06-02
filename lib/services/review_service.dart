@@ -6,6 +6,7 @@ import 'package:final_project_haija/models/review.dart';
 class ReviewService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
   static final CollectionReference _reviewCollection = _database.collection('reviews');
+  static final CollectionReference _booksCollection = _database.collection('books');
 
 
   static Future<void> addNewReview(String userId, Review review) async {
@@ -19,15 +20,11 @@ class ReviewService {
     }
   }
 
-  static Future<void> addNewReviewToBook(String bookId, Review review, CollectionReference booksCollection) async {
+  static Future<void> addNewReviewToBook(String bookId, Review review) async {
   Map<String, dynamic> newReview = review.toDocument();
 
   try {
-    await _reviewCollection.doc(review.idUser).set(newReview);
-    print('Review has been added.');
-
-    // Tambahkan review ke buku yang sesuai
-    await booksCollection.doc(bookId).update({
+    await _booksCollection.doc(bookId).update({
       'reviews': FieldValue.arrayUnion([review.toDocument()])
     });
     print('Review has been added to book.');

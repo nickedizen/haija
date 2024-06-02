@@ -1,15 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/screens/detail_screen.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:flutter/material.dart';
 
 class NewIndentedListView extends StatelessWidget {
-  const NewIndentedListView({super.key});
+  final Stream<List<Books>> function;
+  const NewIndentedListView({required this.function, super.key});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: BooksService.getBooksList(), 
+      stream: function, 
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');

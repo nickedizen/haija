@@ -38,6 +38,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
     if (widget.book != null) {
       _titleController.text = widget.book!.title;
       _descriptionController.text = widget.book!.description;
+      _selectedDate = widget.book!.publishedDate;
       _selectedAuthorId = widget.book!.author;
       _selectedGenre = widget.book!.genre;
       _fillAuthorNameList();
@@ -213,6 +214,8 @@ Future<void> _getAuthorList() async {
         widget.book!.genre = _selectedGenre;
         widget.book!.description = _descriptionController.text;
         widget.book!.imageAsset = imageUrl!;
+
+        BooksService.updateBook(widget.book!, context);
     }
   }
 

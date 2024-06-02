@@ -3,6 +3,7 @@ import 'package:final_project_haija/models/author.dart';
 import 'package:final_project_haija/models/review.dart';
 
 class Books {
+  String? idBook;
   String title;
   List<String> author;
   final DateTime publishedDate;
@@ -14,6 +15,7 @@ class Books {
   List<String>? idOfUsersLikeThisBook;
 
   Books({
+    this.idBook,
     required this.title,
     required this.author,
     required this.publishedDate,
@@ -28,6 +30,7 @@ class Books {
   factory Books.fromDocument(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Books(
+      idBook: data['idBook'],
       title: data['title'],
       author: data['author'],
       publishedDate: data['publishedDate'],
@@ -42,6 +45,7 @@ class Books {
 
   Map<String, dynamic> toDocument() {
     return {
+      'idBook': idBook,
       'title': title,
       'author': author,
       'publishedDate': publishedDate,
