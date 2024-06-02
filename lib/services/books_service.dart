@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project_haija/models/author.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/models/review.dart';
+import 'package:final_project_haija/services/author_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,8 @@ class BooksService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
   static final CollectionReference _booksCollection =
       _database.collection('books');
+  static final CollectionReference _authorCollection = _database.collection('authors');
+  static final CollectionReference _genreCollection = _database.collection('genres');
   static final _storage = FirebaseStorage.instance;
 
   static Future<void> addNewBook(Books book, BuildContext context) async {
@@ -27,6 +31,7 @@ class BooksService {
       'reviews': book.reviews,
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
+
     final snapshot = await _booksCollection.doc('${book.title}-${book.author}-${book.publishedDate.year}').get();
     if (snapshot.exists) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -35,6 +40,20 @@ class BooksService {
       );
     } else {
       await _booksCollection.doc('${book.title}-${book.author}-${book.publishedDate.year}').set(newBook);
+      if (book.author.isNotEmpty) {
+        for (var authorId in book.author) {
+          _authorCollection.doc(authorId).update({
+            'idBooks': FieldValue.arrayUnion(['${book.title}-${book.author}-${book.publishedDate.year}'])
+          });
+        }
+      }
+      if (book.genre.isNotEmpty) {
+        for (var genreId in book.genre) {
+          _genreCollection.doc(genreId).update({
+            'idBooks': FieldValue.arrayUnion(['${book.title}-${book.author}-${book.publishedDate.year}'])
+          });
+        }
+      }
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Book ${newBook['title']} has successfully been added.')

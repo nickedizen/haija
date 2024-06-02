@@ -9,6 +9,7 @@ class Author {
   List<String>? idBooks;
 
   Author({
+    this.authorId,
     required this.authorName,
     this.authorDescription,
     this.authorProfileUrl,

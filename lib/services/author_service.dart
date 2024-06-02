@@ -23,12 +23,14 @@ class AuthorService {
       'authorDescription': author.authorDescription,
       'authorProfileUrl': author.authorProfileUrl,
       'authorDataCreated': timeNow,
+      'idBooks': null
     };
     await _authorCollection.doc(newAuthor['authorId']).set(newAuthor);
   }
 
   static Future<void> updateAuthor(Author author) async {
     Map<String, dynamic> updatedAuthor = {
+      'authorId': author.authorId,
       'authorName': author.authorName,
       'authorDescription': author.authorDescription,
       'authorProfileUrl': author.authorProfileUrl,
@@ -64,5 +66,18 @@ class AuthorService {
       authorName: snapshot['authorName'],
     );
     return tempAuthor.authorName;
+  }
+
+  static Future<Author> getSpecificAuthorData(String authorId) async {
+    final authorSnapshot = await _authorCollection.doc(authorId).get();
+    final authorData = authorSnapshot.data() as Map<String, dynamic>;
+    return Author(
+      authorId: authorData['authorId'],
+      authorName: authorData['authorName'],
+      authorDescription: authorData['authorDescription'],
+      authorProfileUrl: authorData['authorProfileUrl'],
+      authorDataCreated: (authorData['authorDataCreated']as Timestamp).toDate(),
+      idBooks: authorData['idBooks']
+    );
   }
 }
