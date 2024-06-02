@@ -31,6 +31,9 @@ class BooksService {
       'reviews': book.reviews,
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
+    
+
+    
 
     final snapshot = await _booksCollection.doc('${book.title}-${book.author}-${book.publishedDate.year}').get();
     if (snapshot.exists) {
@@ -81,6 +84,8 @@ class BooksService {
       return null;
     }
   }
+
+  
   static Stream<List<Books>> getBooksList() {
     return _booksCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -97,6 +102,11 @@ class BooksService {
           idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>() : [],
         );
       }).toList();
+      
     });
+    
+
+
+
   }
 }

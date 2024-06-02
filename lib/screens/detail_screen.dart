@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/author.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/screens/main_screen.dart';
+import 'package:final_project_haija/screens/ratingreview_screen.dart';
 import 'package:final_project_haija/services/author_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -300,7 +301,11 @@ class _MainScreenState extends State<DetailScreen> {
             child: Padding(
               padding: const EdgeInsets.only(left: 20.0, right: 20),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => RatingReviewScreen(book: widget.book)),
+                );
+                },
                 child: Text(
                   'Write a Review',
                   style: TextStyle(fontSize: 22),
