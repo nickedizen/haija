@@ -164,9 +164,9 @@ class _MainScreenState extends State<DetailScreen> {
                               isFavorite = false;
                               lovedBy--;
                             });
-                            await _bookCollection.doc(widget.book.idBook).update({
-                              'idOfUsersLikeThisBook': FieldValue.arrayRemove([currentUserId])
-                            });
+                            //await _bookCollection.doc(widget.book.idBook).update({
+                              //'idOfUsersLikeThisBook': FieldValue.arrayRemove([currentUserId])
+                            //});
                             await _userCollection.doc(currentUserId).update({
                               'favoriteBooks': FieldValue.arrayRemove([widget.book.idBook])
                             });

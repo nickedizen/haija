@@ -221,6 +221,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                 style: TextStyle(fontSize: 20),
                               ),
                             ),
+                            TextButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed('/pengaturan');
+                              }, 
+
+                              icon: Icon(Icons.settings),
+                              label: const Text(
+                                'Setting',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              ),
                           ],
                         ),
                         SizedBox(height: 10),
