@@ -5,6 +5,7 @@ class AppUser {
   String? userId;
   String status;
   String username;
+  String? lowercaseUsername;
   String? profilePicture;
   String? profileBio;
   double? latitude;
@@ -18,6 +19,7 @@ class AppUser {
     this.userId,
     this.status = 'user',
     required this.username,
+    this.lowercaseUsername,
     this.profilePicture,
     this.profileBio,
     this.latitude,
@@ -34,6 +36,7 @@ class AppUser {
       userId: data['userId'],
       status: data['status'],
       username: data['username'],
+      lowercaseUsername: data['lowercaseUsername'],
       profilePicture: data['profilePicture'],
       profileBio: data['profileBio'],
       latitude: data['latitude'] != null ? data['latitude'] as double : null,
@@ -50,6 +53,7 @@ class AppUser {
       'userId': userId,
       'status': status,
       'username': username,
+      'lowercaseUsername': lowercaseUsername,
       'profilePicture': profilePicture,
       'profileBio': profileBio,
       'latitude': latitude,

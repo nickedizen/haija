@@ -27,6 +27,7 @@ class BooksService {
     Map<String, dynamic> newBook = {
       'idBook': idBook,
       'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
       'author': book.author,
       'publishedDate': book.publishedDate,
       'rating': book.rating,
@@ -78,6 +79,7 @@ class BooksService {
     Map<String, dynamic> updatedBook = {
       'idBook': idBook,
       'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
       'author': book.author,
       'publishedDate': book.publishedDate,
       'rating': book.rating,

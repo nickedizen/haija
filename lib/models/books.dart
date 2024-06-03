@@ -5,6 +5,7 @@ import 'package:final_project_haija/models/review.dart';
 class Books {
   String? idBook;
   String title;
+  String? lowercaseTitle;
   List<String> author;
   final DateTime publishedDate;
   double? rating;
@@ -17,6 +18,7 @@ class Books {
   Books({
     this.idBook,
     required this.title,
+    this.lowercaseTitle,
     required this.author,
     required this.publishedDate,
     this.rating,
@@ -32,6 +34,7 @@ factory Books.fromDocument(DocumentSnapshot doc) {
     return Books(
       idBook: data['idBook'],
       title: data['title'],
+      lowercaseTitle: data['lowercaseTitle'],
       author: data['author'] != null ? (data['author'] as List<dynamic>).cast<String>() : [],
       publishedDate: (data['publishedDate'] as Timestamp).toDate(),
       rating: data['rating'] != null ? (data['rating'] is int ? (data['rating'] as int).toDouble() : data['rating'] as double) : null,
@@ -46,6 +49,7 @@ factory Books.fromDocument(DocumentSnapshot doc) {
     return {
       'idBook': idBook,
       'title': title,
+      'lowercaseTitle': lowercaseTitle,
       'author': author,
       'publishedDate': publishedDate,
       'rating': rating,
