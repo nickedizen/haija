@@ -23,7 +23,7 @@ class Author {
       authorName: data['authorName'],
       authorDescription: data['authorDescription'],
       authorProfileUrl: data['authorProfileUrl'],
-      authorDataCreated: data['authorDataCreated'],
+      authorDataCreated: (data['authorDataCreated'] as Timestamp?)?.toDate(),
       idBooks: data['idBooks']
     );
   }

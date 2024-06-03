@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/author.dart';
 import 'package:final_project_haija/models/books.dart';
+import 'package:final_project_haija/screens/author_screen.dart';
 import 'package:final_project_haija/screens/book_edit_screen.dart';
 import 'package:final_project_haija/screens/main_screen.dart';
 import 'package:final_project_haija/screens/ratingreview_screen.dart';
@@ -49,8 +50,9 @@ class _MainScreenState extends State<DetailScreen> {
     _getListAuthor();
     isFavorite = checkIfLiked();
     currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    lovedBy = widget.book.idOfUsersLikeThisBook != null ? widget.book.idOfUsersLikeThisBook!.length : 0;
-
+    lovedBy = widget.book.idOfUsersLikeThisBook != null
+        ? widget.book.idOfUsersLikeThisBook!.length
+        : 0;
   }
 
   void _getUserStatus() async {
@@ -81,6 +83,19 @@ class _MainScreenState extends State<DetailScreen> {
     }
   }
 
+  Future<String?> getAuthorIdByName(String authorName) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('authors')
+        .where('authorName', isEqualTo: authorName)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,8 +105,7 @@ class _MainScreenState extends State<DetailScreen> {
           builder: (context, snapshot) {
             return Scaffold(
               body: SingleChildScrollView(
-                child: Column(
-                  children: [
+                child: Column(children: [
                   Column(
                     children: [
                       Container(
@@ -112,61 +126,80 @@ class _MainScreenState extends State<DetailScreen> {
                           ],
                         ),
                       ),
-                            
-                                      Container(
-                        color: Colors.grey,
-                        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                          Padding(
-                              padding: EdgeInsets.only(bottom: 7, right: 20),
-                              child: isFavorite
-                              ? IconButton(
-                                icon: const Icon(Icons.favorite),
-                                color: Colors.red,
-                                onPressed: () async {
-                                  setState(() {
-                                    isFavorite = false;
-                                    lovedBy--;
-                                  });
-                                  await _bookCollection.doc(widget.book.idBook).update({
-                                    'idOfUsersLikeThisBook': FieldValue.arrayRemove([currentUserId])
-                                  });
-                                  await _userCollection.doc(currentUserId).update({
-                                    'favoriteBooks': FieldValue.arrayRemove([widget.book.idBook])
-                                  });
-                                },
-                              )
-                              : IconButton(
-                                icon: const Icon(Icons.favorite_border_outlined),
-                                color: Colors.white,
-                                onPressed: () async {
-                                  setState(() {
-                                    isFavorite = true;
-                                    lovedBy++;
-                                  });
-                                  await _bookCollection.doc(widget.book.idBook).update({
-                                    'idOfUsersLikeThisBook': FieldValue.arrayUnion([currentUserId])
-                                  });
-                                  await _userCollection.doc(currentUserId).update({
-                                    'favoriteBooks': FieldValue.arrayUnion([widget.book.idBook])
-                                  });
-                                },
-                              )
-                              ),
-                        ])),
+                      Container(
+                          color: Colors.grey,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Padding(
+                                    padding:
+                                        EdgeInsets.only(bottom: 7, right: 20),
+                                    child: isFavorite
+                                        ? IconButton(
+                                            icon: const Icon(Icons.favorite),
+                                            color: Colors.red,
+                                            onPressed: () async {
+                                              setState(() {
+                                                isFavorite = false;
+                                                lovedBy--;
+                                              });
+                                              await _bookCollection
+                                                  .doc(widget.book.idBook)
+                                                  .update({
+                                                'idOfUsersLikeThisBook':
+                                                    FieldValue.arrayRemove(
+                                                        [currentUserId])
+                                              });
+                                              await _userCollection
+                                                  .doc(currentUserId)
+                                                  .update({
+                                                'favoriteBooks':
+                                                    FieldValue.arrayRemove(
+                                                        [widget.book.idBook])
+                                              });
+                                            },
+                                          )
+                                        : IconButton(
+                                            icon: const Icon(
+                                                Icons.favorite_border_outlined),
+                                            color: Colors.white,
+                                            onPressed: () async {
+                                              setState(() {
+                                                isFavorite = true;
+                                                lovedBy++;
+                                              });
+                                              await _bookCollection
+                                                  .doc(widget.book.idBook)
+                                                  .update({
+                                                'idOfUsersLikeThisBook':
+                                                    FieldValue.arrayUnion(
+                                                        [currentUserId])
+                                              });
+                                              await _userCollection
+                                                  .doc(currentUserId)
+                                                  .update({
+                                                'favoriteBooks':
+                                                    FieldValue.arrayUnion(
+                                                        [widget.book.idBook])
+                                              });
+                                            },
+                                          )),
+                              ])),
                     ],
                   ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  child: Text(
-                    widget.book.title,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.clip,
-                    style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15),
+                    child: Text(
+                      widget.book.title,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.clip,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
                   if (currentUserStatus == 'admin')
                     ElevatedButton(
                         onPressed: () {
@@ -186,26 +219,33 @@ class _MainScreenState extends State<DetailScreen> {
                         ),
                       ),
                       TextSpan(
-                          text: listAuthor[0].authorName,
-                          style: const TextStyle(color: Colors.blue),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => MainScreen()));
-                            }),
+                  text: listAuthor[0].authorName,
+                  style: const TextStyle(color: Colors.blue),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () async {
+                      String? authorId = await getAuthorIdByName(listAuthor[0].authorName);
+                      if (authorId != null) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AuthorDetailScreen(authorId: authorId)));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Author not found')),
+                        );
+                      }
+                    },
+                ),
                     ],
                   )),
-      
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     RatingBarIndicator(
-                          rating: widget.book.rating ?? 0,
-                          itemBuilder: (context, index) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          itemCount: 5,
-                          itemSize: 25.0, // Adjust the size of the stars
-                          direction: Axis.horizontal,
+                      rating: widget.book.rating ?? 0,
+                      itemBuilder: (context, index) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      itemCount: 5,
+                      itemSize: 25.0, // Adjust the size of the stars
+                      direction: Axis.horizontal,
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 10),
@@ -261,7 +301,6 @@ class _MainScreenState extends State<DetailScreen> {
                     indent: 70,
                     endIndent: 70,
                   ),
-      
                   Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
@@ -334,7 +373,9 @@ class _MainScreenState extends State<DetailScreen> {
                   SizedBox(height: 20),
                   SizedBox(
                     height: 570,
-                    child: ReviewListView(function: ReviewService.getReviewsForBook(widget.book.idBook!)),
+                    child: ReviewListView(
+                        function: ReviewService.getReviewsForBook(
+                            widget.book.idBook!)),
                   ),
                   SizedBox(height: 20),
                   Text('Loved By',
