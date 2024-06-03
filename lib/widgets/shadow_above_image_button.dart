@@ -56,9 +56,9 @@ class ShadowAboveImageButton extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FilteredScreen(genre: this.text))),
+                  // onTap: () => Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: this.text))),
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
               ),

@@ -64,20 +64,20 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
 
-                    Expanded(
-                      child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                        ),
+                    // Expanded(
+                    //   child: GridView.builder(
+                    //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    //       crossAxisCount: 2,
+                    //     ),
 
-                        padding: const EdgeInsets.all(8),
-                        itemCount: _filteredBooks.length,
-                        itemBuilder: (context, index) {
-                          Book book = _filteredBooks[index];
-                          return BookCard(book: book);
-                        },
-                      ),
-                    ),
+                    //     padding: const EdgeInsets.all(8),
+                    //     itemCount: _filteredBooks.length,
+                    //     itemBuilder: (context, index) {
+                    //       Book book = _filteredBooks[index];
+                    //       return BookCard(book: book);
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 )
             ),

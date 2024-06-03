@@ -1,11 +1,32 @@
 import 'package:final_project_haija/models/books.dart';
+import 'package:final_project_haija/services/author_service.dart';
 import 'package:flutter/material.dart';
-import 'package:final_project_haija/models/book.dart';
 import 'package:final_project_haija/screens/detail_screen.dart';
 
-class BookCard extends StatelessWidget {
+class BooksCard extends StatefulWidget {
   final Books book;
-  const BookCard({super.key, required this.book});
+  const BooksCard({super.key, required this.book});
+
+  @override
+  State<BooksCard> createState() => _BooksCardState();
+}
+
+class _BooksCardState extends State<BooksCard> {
+  List<String> authorList = [];
+
+  Future<void> _getAuthorName() async {
+    for (var authorId in widget.book.author) {
+      var name = await AuthorService.getAuthorName(authorId);
+      authorList.add(name);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getAuthorName();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +44,11 @@ class BookCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Hero(
-                  tag: book.imageAsset,
+                  tag: widget.book.imageAsset,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Image.network(
-                      book.imageAsset,
+                      widget.book.imageAsset,
                       width: double.infinity,
                       height: double.infinity,
                     ),
@@ -48,14 +69,14 @@ class BookCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16, top: 8),
                       child: Text(
-                        book.genre[0],
+                        widget.book.genre[0],
                         style: const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 16, top: 3, right: 16),
                       child: Text(
-                        book.title,
+                        widget.book.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -67,7 +88,7 @@ class BookCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16, bottom: 8),
                       child: Text(
-                        'book.author',
+                        authorList.join(', '),
                         style: const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     )
@@ -86,8 +107,8 @@ class BookCard extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(15),
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => DetailScreen(book: book)));
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => DetailScreen(book: widget.book)));
                   },
                 ),
               )

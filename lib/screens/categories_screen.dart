@@ -1,4 +1,5 @@
 import 'package:final_project_haija/screens/search_screen.dart';
+import 'package:final_project_haija/widgets/custom_appbar.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/shadow_above_image_button.dart';
 import 'package:flutter/material.dart';
@@ -31,28 +32,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 const SizedBox(height: 20),
 
                 // TODO 1 : Membuat search bar
-                TextField(
-                  onSubmitted: (value) => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SearchScreen(searchQuery: _searchQuery)
-                  ),),
-                  controller: _searchController,
-                  onChanged: _typeQuery,
-                  decoration: InputDecoration(
-                    hintText: 'Search title/author',
-                    prefixIcon: const Icon(
-                        Icons.search,
-                        color: Colors.black,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey.shade300,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none
-                    )
-                    ),
-                    // contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12)
-                  ),
+                
 
                 const SizedBox(height: 30),
 
