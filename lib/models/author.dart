@@ -34,6 +34,7 @@ class Author {
       'authorDescription': authorDescription,
       'authorProfileUrl': authorProfileUrl,
       'authorDataCreated': authorDataCreated,
+      'authorDataCreated': authorDataCreated,
       'idBooks': idBooks
     };
   }

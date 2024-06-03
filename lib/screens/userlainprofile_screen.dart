@@ -2,13 +2,13 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/screens/google_maps_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
 import 'package:final_project_haija/widgets/user_list_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import '../data/book_data.dart';
@@ -34,7 +34,6 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
     currentUserId = FirebaseAuth.instance.currentUser!.uid;
     userLainId = widget.user.userId!;
     _initializeFriendStatusButton();
-
   }
 
   void _initializeFriendStatusButton() async {
@@ -240,11 +239,23 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                                     friendStatus = 'notFriends';
                                   });
                                 },
-                              ),                        
-                          Text(
-                            'MEETUP',
-                            style: TextStyle(fontSize: 20),
-                          ),
+                              ),
+                          if (widget.user.latitude != null && widget.user.longitude != null)                         
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => GoogleMapsScreen(
+                                  latitude: widget.user.latitude!, 
+                                  longitude: widget.user.longitude!
+                                ))
+                              );
+                            }, 
+                            child: const Text(
+                              'MEETUP',
+                              style: TextStyle(
+                                fontSize: 20
+                              ),
+                            ))
                         ],
                       ),
                     ),
