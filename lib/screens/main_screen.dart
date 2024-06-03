@@ -118,22 +118,14 @@ class _MainScreenState extends State<MainScreen> {
                 ),
 
               // All Books Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'All Books',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'All Books', list: bookList)));
-                      },
-                      child: const Text('see more'),
                     ),
                   ],
                 ),
@@ -145,52 +137,36 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(height: 25),
 
               // Latest Books Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Latest Books',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Latest Books', list: latestBooks)));
-                      },
-                      child: const Text('see more'),
                     ),
                   ],
                 ),
               ),
-              IndentedListView(itemList: latestBooks, indent: 15),
+              NewIndentedListView(function: BooksService.getBooksByYearRange(2024)),
 
               const SizedBox(height: 25),
 
               // Upcoming Books Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Upcoming Books',
+                    Text(
+                      'Horror Books',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: 'Upcoming Books', list: upcomingBooks)));
-                      },
-                      child: const Text('see more'),
                     ),
                   ],
                 ),
               ),
-              IndentedListView(itemList: upcomingBooks, indent: 15),
+              NewIndentedListView(function: BooksService.getBooksByGenre('Horror'))
             ],
           ),
         ),

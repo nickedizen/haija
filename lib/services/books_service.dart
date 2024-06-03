@@ -225,4 +225,26 @@ static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
     return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
   });
 }
+
+  static Stream<List<Books>> getBooksByYearRange(int year) {
+    DateTime startDate = DateTime(year);
+    DateTime endDate = DateTime(year+1);
+
+    return _booksCollection
+      .where('publishedDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+      .where('publishedDate', isLessThan: Timestamp.fromDate(endDate))
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+      });
+  }
+
+  static Stream<List<Books>> getBooksByGenre(String genre) {
+    return _booksCollection
+      .where('genre', arrayContains: genre)
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+      });
+  }
 }
