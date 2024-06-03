@@ -22,6 +22,7 @@ class AppUserService {
       'userId': userId,
       'status': appUser.status,
       'username': appUser.username,
+      'lowercaseUsername': appUser.username.toLowerCase(),
       'profilePicture': appUser.profilePicture,
       'profileBio': appUser.profileBio,
       'latitude': appUser.latitude,
@@ -40,6 +41,7 @@ class AppUserService {
       'userId': appUser.userId,
       'status': appUser.status,
       'username': appUser.username,
+      'lowercaseUsername': appUser.username.toLowerCase(),
       'profilePicture': appUser.profilePicture,
       'profileBio': appUser.profileBio,
       'latitude': appUser.latitude,
@@ -181,4 +183,19 @@ static Stream<List<AppUser>> getFriendsStream(String userId) {
       'friendsId': FieldValue.arrayRemove([otherUserId])
     });
   }
+
+static Stream<List<AppUser>> getUsersByUsername(String username) {
+  String searchKey = username.toLowerCase();
+  String endKey = searchKey.substring(0, searchKey.length - 1) +
+      String.fromCharCode(searchKey.codeUnitAt(searchKey.length - 1) + 1);
+
+  return _appUserCollection
+      .where('lowercaseUsername', isGreaterThanOrEqualTo: searchKey)
+      .where('lowercaseUsername', isLessThan: endKey)
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs.map((doc) => AppUser.fromDocument(doc)).toList();
+  });
+}
+
 }

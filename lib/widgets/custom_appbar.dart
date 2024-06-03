@@ -1,10 +1,12 @@
+import 'package:final_project_haija/screens/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/services/books_service.dart';
 
-class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // Modify the function to return a list of filtered books
+class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { 
+  final TextEditingController _searchController = TextEditingController(); // Modify the function to return a list of filtered books
 
-  const CustomAppbar({Key? key}) : super(key: key);
+  CustomAppbar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // M
         padding: const EdgeInsets.only(left: 4),
         child: TextField(
           style: const TextStyle(height: 0.1),
-
+          controller: _searchController,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -27,15 +29,21 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // M
             ),
             suffixIcon: IconButton(
               icon: const Icon(Icons.clear),
-              onPressed: () { // Clear search input
+              onPressed: () {
+                _searchController.clear();
               },
             ),
           ),
+          onSubmitted: (String query) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => SearchScreen(query: _searchController.text))
+            );
+          },
         ),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.chat_bubble),
+          icon: const Icon(Icons.notifications),
           onPressed: () {},
         ),
       ],

@@ -26,27 +26,43 @@ class BooksService {
       _database.collection('app-users');
   static final _storage = FirebaseStorage.instance;
 
-  static Future<void> addNewBook(Books book, BuildContext context) async {
+static Future<void> addNewBook(Books book, BuildContext context) async {
+  try {
+    // Membuat ID buku berdasarkan title, author, dan tahun publishedDate
     String idBook = '${book.title}-${book.author}-${book.publishedDate.year}';
+
+    // Konversi nilai yang nullable ke format yang sesuai
+    double rating = book.rating ?? 0.0;
+    List<String> genres = book.genre ?? [];
+    String imageAsset = book.imageAsset ?? '';
+    List<String> idOfUsersLikeThisBook = book.idOfUsersLikeThisBook ?? [];
+
+    // Membuat map dari data buku
     Map<String, dynamic> newBook = {
       'idBook': idBook,
       'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
       'author': book.author,
       'publishedDate': book.publishedDate,
-      'rating': book.rating,
+      'rating': rating,
       'description': book.description,
-      'genre': book.genre,
-      'imageAsset': book.imageAsset,
-      'reviews': book.reviews,
-      'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
+      'genre': genres,
+      'imageAsset': imageAsset,
+      'reviews': [],
+      'idOfUsersLikeThisBook': idOfUsersLikeThisBook
     };
 
+    // Mengecek apakah buku sudah ada di Firestore
     final snapshot = await _booksCollection.doc(idBook).get();
     if (snapshot.exists) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Book ${newBook['title']} is already exist!')));
+        content: Text('Book ${newBook['title']} already exists!'),
+      ));
     } else {
+      // Menyimpan data buku ke Firestore
       await _booksCollection.doc(idBook).set(newBook);
+
+      // Memperbarui data penulis jika ada
       if (book.author.isNotEmpty) {
         for (var authorId in book.author) {
           _authorCollection.doc(authorId).update({
@@ -54,19 +70,31 @@ class BooksService {
           });
         }
       }
-      if (book.genre.isNotEmpty) {
-        for (var genreId in book.genre) {
+
+      // Memperbarui data genre jika ada
+      if (genres.isNotEmpty) {
+        for (var genreId in genres) {
           _genreCollection.doc(genreId).update({
             'idBooks': FieldValue.arrayUnion([idBook])
           });
         }
       }
+
+      // Menutup layar dan menampilkan pesan berhasil
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:
-              Text('Book ${newBook['title']} has successfully been added.')));
+        content: Text('Book ${newBook['title']} has successfully been added.'),
+      ));
     }
+  } catch (e) {
+    // Menampilkan pesan error
+    print('Failed to add new book: $e');
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Failed to add new book: $e'),
+    ));
   }
+}
+
 
   static Future<void> updateBook(Books book, BuildContext context) async {
     String idBook = '';
@@ -76,16 +104,21 @@ class BooksService {
       idBook = book.idBook!;
     }
 
+    List<Map<String, dynamic>> reviews = book.reviews != null
+        ? book.reviews!.map((review) => review.toDocument()).toList()
+        : [];
+
     Map<String, dynamic> updatedBook = {
       'idBook': idBook,
       'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
       'author': book.author,
       'publishedDate': book.publishedDate,
       'rating': book.rating,
       'description': book.description,
       'genre': book.genre,
       'imageAsset': book.imageAsset,
-      'reviews': book.reviews,
+      'reviews': reviews,
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
     await _booksCollection.doc(idBook).update(updatedBook);
@@ -197,6 +230,7 @@ class BooksService {
     }
   }
 
+
   static Stream<List<Books>> getBooksByAuthor(String authorId) {
     final StreamController<List<Books>> controller =
         StreamController<List<Books>>();
@@ -216,3 +250,41 @@ class BooksService {
     return controller.stream;
   }
 }
+
+  static Stream<List<Books>> getBooksByTitle(String title) {
+  String searchKey = title.toLowerCase();
+  String endKey = searchKey.substring(0, searchKey.length - 1) +
+      String.fromCharCode(searchKey.codeUnitAt(searchKey.length - 1) + 1);
+
+  return _booksCollection
+      .where('lowercaseTitle', isGreaterThanOrEqualTo: searchKey)
+      .where('lowercaseTitle', isLessThan: endKey)
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+  });
+}
+
+  static Stream<List<Books>> getBooksByYearRange(int year) {
+    DateTime startDate = DateTime(year);
+    DateTime endDate = DateTime(year+1);
+
+    return _booksCollection
+      .where('publishedDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+      .where('publishedDate', isLessThan: Timestamp.fromDate(endDate))
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+      });
+  }
+
+  static Stream<List<Books>> getBooksByGenre(String genre) {
+    return _booksCollection
+      .where('genre', arrayContains: genre)
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+      });
+  }
+}
+

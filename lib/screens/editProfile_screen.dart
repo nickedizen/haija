@@ -266,6 +266,6 @@ class _EditProfileScreen extends State<EditProfileScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: CustomNavigationBar(selectedIndex: 3));
+      );
   }
 }

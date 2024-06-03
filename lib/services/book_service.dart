@@ -24,6 +24,7 @@ class BooksService {
   static Future<void> addNewBook(Books book, BuildContext context) async {
     Map<String, dynamic> newBook = {
       'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
       'author': book.author,
       'publishedDate': book.publishedDate,
       'rating': book.rating,
@@ -65,6 +66,25 @@ class BooksService {
           content:
               Text('Book ${newBook['title']} has successfully been added.')));
     }
+  }
+
+  static Future<void> editBookk(Books book, BuildContext context) async {
+    Map<String, dynamic> newBook = {
+      'title': book.title,
+      'lowercaseTitle': book.title.toLowerCase(),
+      'author': book.author,
+      'publishedDate': book.publishedDate,
+      'rating': book.rating,
+      'description': book.description,
+      'genre': book.genre,
+      'imageAsset': book.imageAsset,
+      'reviews': book.reviews,
+      'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
+    };
+
+    final snapshot = await _booksCollection
+        .doc('${book.title}-${book.author}-${book.publishedDate.year}')
+        .update(newBook);
   }
 
   static Future<String?> uploadImage(XFile imageFile) async {
