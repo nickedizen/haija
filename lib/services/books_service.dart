@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,9 +18,12 @@ class BooksService {
   static final FirebaseFirestore _database = FirebaseFirestore.instance;
   static final CollectionReference _booksCollection =
       _database.collection('books');
-  static final CollectionReference _authorCollection = _database.collection('authors');
-  static final CollectionReference _genreCollection = _database.collection('genres');
-  static final CollectionReference _userCollection = _database.collection('app-users');
+  static final CollectionReference _authorCollection =
+      _database.collection('authors');
+  static final CollectionReference _genreCollection =
+      _database.collection('genres');
+  static final CollectionReference _userCollection =
+      _database.collection('app-users');
   static final _storage = FirebaseStorage.instance;
 
 static Future<void> addNewBook(Books book, BuildContext context) async {
@@ -117,14 +121,12 @@ static Future<void> addNewBook(Books book, BuildContext context) async {
       'reviews': reviews,
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
-      await _booksCollection.doc(idBook).update(updatedBook);
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Book ${updatedBook['title']} has successfully been added.')
-        )
-      );
-    }
-  
+    await _booksCollection.doc(idBook).update(updatedBook);
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content:
+            Text('Book ${updatedBook['title']} has successfully been added.')));
+  }
 
   static Future<String?> uploadImage(XFile imageFile) async {
     try {
@@ -146,55 +148,71 @@ static Future<void> addNewBook(Books book, BuildContext context) async {
     }
   }
 
-static Stream<List<Books>> getBooksList() {
-  return _booksCollection.snapshots().map((snapshot) {
-    return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
-  });
-}
+  static Stream<List<Books>> getBooksList() {
+    return _booksCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+    });
+  }
 
-static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
-  return _userCollection.snapshots().asyncMap((snapshot) async {
-    DocumentSnapshot snapshot = await  _userCollection.doc(userId).get();
-    var listFavoriteBookIdsDynamic = snapshot.get('favoriteBooks'); 
-    if (listFavoriteBookIdsDynamic == null || listFavoriteBookIdsDynamic.isEmpty) {
-      return []; // Return an empty list if favoriteBooks is null or empty
-    }
-    List<String> listFavoriteBookIds = List<String>.from(listFavoriteBookIdsDynamic.cast<String>());
+  static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
+    return _userCollection.snapshots().asyncMap((snapshot) async {
+      DocumentSnapshot snapshot = await _userCollection.doc(userId).get();
+      var listFavoriteBookIdsDynamic = snapshot.get('favoriteBooks');
+      if (listFavoriteBookIdsDynamic == null ||
+          listFavoriteBookIdsDynamic.isEmpty) {
+        return []; // Return an empty list if favoriteBooks is null or empty
+      }
+      List<String> listFavoriteBookIds =
+          List<String>.from(listFavoriteBookIdsDynamic.cast<String>());
 
-    QuerySnapshot booksSnapshot = await _booksCollection.where(FieldPath.documentId, whereIn: listFavoriteBookIds).get();
+      QuerySnapshot booksSnapshot = await _booksCollection
+          .where(FieldPath.documentId, whereIn: listFavoriteBookIds)
+          .get();
 
-    return booksSnapshot.docs.map((doc) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return Books(
-        idBook: data['idBook'],
-        title: data['title'],
-        author: data['author'] != null ? List<String>.from(data['author']) : [],
-        publishedDate: (data['publishedDate'] as Timestamp).toDate(),
-        rating: data['rating'] != null ? data['rating'] as double : null,
-        description: data['description'],
-        genre: data['genre'] != null ? List<String>.from(data['genre']) : [],
-        imageAsset: data['imageAsset'],
-        reviews: data['reviews'] != null ? (data['reviews'] as List<dynamic>).cast<Review>() : [],
-        idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? List<String>.from(data['idOfUsersLikeThisBook']) : [],
-      );
-    }).toList();
-  });
-}
-
+      return booksSnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Books(
+          idBook: data['idBook'],
+          title: data['title'],
+          author:
+              data['author'] != null ? List<String>.from(data['author']) : [],
+          publishedDate: (data['publishedDate'] as Timestamp).toDate(),
+          rating: data['rating'] != null ? data['rating'] as double : null,
+          description: data['description'],
+          genre: data['genre'] != null ? List<String>.from(data['genre']) : [],
+          imageAsset: data['imageAsset'],
+          reviews: data['reviews'] != null
+              ? (data['reviews'] as List<dynamic>).cast<Review>()
+              : [],
+          idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null
+              ? List<String>.from(data['idOfUsersLikeThisBook'])
+              : [],
+        );
+      }).toList();
+    });
+  }
 
   static Future<Books> getSpecificBooks(String idBook) async {
     var snapshot = await _booksCollection.doc(idBook).get();
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Books(
       title: data['title'],
-      author: data['author'] != null ? (data['author'] as List<dynamic>).cast<String>() : [],
+      author: data['author'] != null
+          ? (data['author'] as List<dynamic>).cast<String>()
+          : [],
       publishedDate: (data['publishedDate'] as Timestamp).toDate(),
       rating: data['rating'] != null ? data['rating'] as double : null,
       description: data['description'],
-      genre: data['genre'] != null ? (data['genre'] as List<dynamic>).cast<String>() : [],
+      genre: data['genre'] != null
+          ? (data['genre'] as List<dynamic>).cast<String>()
+          : [],
       imageAsset: data['imageAsset'],
-      reviews: data['reviews'] != null ? (data['reviews'] as List<dynamic>).cast<Review>() : [],
-      idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>() : [],
+      reviews: data['reviews'] != null
+          ? (data['reviews'] as List<dynamic>).cast<Review>()
+          : [],
+      idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null
+          ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>()
+          : [],
     );
   }
 
@@ -211,6 +229,27 @@ static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
       }
     }
   }
+
+
+  static Stream<List<Books>> getBooksByAuthor(String authorId) {
+    final StreamController<List<Books>> controller =
+        StreamController<List<Books>>();
+
+    // Retrieve books by authorId from Firestore
+    _booksCollection
+        .where('author', arrayContains: authorId)
+        .snapshots()
+        .listen((snapshot) {
+      List<Books> books =
+          snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+      controller.add(books);
+    }, onError: (error) {
+      controller.addError(error);
+    });
+
+    return controller.stream;
+  }
+}
 
   static Stream<List<Books>> getBooksByTitle(String title) {
   String searchKey = title.toLowerCase();
@@ -248,3 +287,4 @@ static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
       });
   }
 }
+
