@@ -28,6 +28,7 @@ class SearchScreen extends StatelessWidget {
             const SizedBox(height: 10),
             QueryUserView(function: AppUserService.getUsersByUsername(query)),
             const SizedBox(height: 10),
+            const Divider(),
             const Text(
               'Books',
               style: TextStyle(

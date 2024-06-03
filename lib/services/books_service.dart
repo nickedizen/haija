@@ -34,7 +34,7 @@ class BooksService {
       'description': book.description,
       'genre': book.genre,
       'imageAsset': book.imageAsset,
-      'reviews': book.reviews,
+      'reviews': [],
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
 
@@ -76,6 +76,10 @@ class BooksService {
       idBook = book.idBook!;
     }
 
+    List<Map<String, dynamic>> reviews = book.reviews != null
+        ? book.reviews!.map((review) => review.toDocument()).toList()
+        : [];
+
     Map<String, dynamic> updatedBook = {
       'idBook': idBook,
       'title': book.title,
@@ -86,7 +90,7 @@ class BooksService {
       'description': book.description,
       'genre': book.genre,
       'imageAsset': book.imageAsset,
-      'reviews': book.reviews,
+      'reviews': reviews,
       'idOfUsersLikeThisBook': book.idOfUsersLikeThisBook
     };
       await _booksCollection.doc(idBook).update(updatedBook);
@@ -183,4 +187,18 @@ static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
       }
     }
   }
+
+  static Stream<List<Books>> getBooksByTitle(String title) {
+  String searchKey = title.toLowerCase();
+  String endKey = searchKey.substring(0, searchKey.length - 1) +
+      String.fromCharCode(searchKey.codeUnitAt(searchKey.length - 1) + 1);
+
+  return _booksCollection
+      .where('lowercaseUsername', isGreaterThanOrEqualTo: searchKey)
+      .where('lowercaseUsername', isLessThan: endKey)
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+  });
+}
 }
