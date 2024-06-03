@@ -190,7 +190,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                               icon: Icon(Icons.settings),
                               label: const Text(
-                                'Setting',
+                                'SETTINGS',
                                 style: TextStyle(fontSize: 20),
                               ),
                               ),

@@ -1,3 +1,4 @@
+import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:final_project_haija/screens/themeProvider.dart';
@@ -22,13 +23,12 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        title: const Row(
           children: [
             Icon(Icons.settings),
             SizedBox(width: 8.0),
             const Text(
-              'Setting',
+              'SETTINGS',
               style: TextStyle(fontSize: 20.0),
             ),
           ],
@@ -55,7 +55,12 @@ class _PengaturanScreenState extends State<PengaturanScreen> {
             ),
             const SizedBox(height: 70.0),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                    // Menavigasi ke layar logout (contoh: SignInScreen)
+          Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => SignInScreen()),
+          );
+              },
               child: const Text('Log Out'),
             ),
           ],
