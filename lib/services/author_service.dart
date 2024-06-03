@@ -77,7 +77,7 @@ class AuthorService {
       authorDescription: authorData['authorDescription'],
       authorProfileUrl: authorData['authorProfileUrl'],
       authorDataCreated: (authorData['authorDataCreated']as Timestamp).toDate(),
-      idBooks: authorData['idBooks']
+      idBooks: (authorData['idBooks'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 }

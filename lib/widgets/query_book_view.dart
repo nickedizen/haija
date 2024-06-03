@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/models/books.dart';
+import 'package:final_project_haija/screens/detail_screen.dart';
 import 'package:final_project_haija/screens/userlainprofile_screen.dart';
 import 'package:final_project_haija/screens/userprofile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class QueryUserView extends StatelessWidget {
-  final Stream<List<AppUser>> function;
-  const QueryUserView({required this.function, super.key});
+class QueryBookView extends StatelessWidget {
+  final Stream<List<Books>> function;
+  const QueryBookView({required this.function, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,39 +34,20 @@ class QueryUserView extends StatelessWidget {
                     children: [
                       Stack(
                         children: [
-                          ClipOval(
-                            child: 
-                            document.profilePicture != null
-                            ? CachedNetworkImage(
-                              imageUrl: document.profilePicture!,
-                              height: 75,
-                              width: 75,
-                              fit: BoxFit.cover,
-                            )
-                            : Container(
-                              height: 75,
-                              width: 75,
-                              child: const CircleAvatar(
-                                backgroundImage: AssetImage(
-                                    "images/placeholder_image.png"
-                                ),
-                              ),
-                            ),
+                          CachedNetworkImage(
+                            imageUrl: document.imageAsset!,
+                            height: 150,
+                            fit: BoxFit.cover,
                           ),
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              customBorder: const CircleBorder(),
                               child: Container(
-                                height: 75,
+                                height: 125,
                                 width: 75,
                               ),
                               onTap: () {
-                                if (document.userId != currentUserId) {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserLainProfileScreen(user: document)));
-                                } else {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserProfileScreen()));
-                                }
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailScreen(book: document)));
                               },
                             ),
                           )
@@ -74,13 +56,9 @@ class QueryUserView extends StatelessWidget {
                       const SizedBox(width: 10),
                       RichText(
                         text: TextSpan(
-                          text: document.username,
+                          text: document.title,
                           recognizer: TapGestureRecognizer()..onTap = () {
-                            if (document.userId != currentUserId) {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserLainProfileScreen(user: document)));
-                            } else {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserProfileScreen()));
-                            }
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => DetailScreen(book: document)));
                           }
                         ),
                       )
