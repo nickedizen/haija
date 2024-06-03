@@ -129,10 +129,10 @@ class AppUserService {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final userDoc = _appUserCollection.doc(userId);
     _appUserCollection.doc(otherUserId).update({
-      'requestFriendFrom': FieldValue.arrayRemove([userId])
+      'requestFriendTo': FieldValue.arrayRemove([userId])
     });
     userDoc.update({
-      'requestFriendTo': FieldValue.arrayRemove([otherUserId])
+      'requestFriendFrom': FieldValue.arrayRemove([otherUserId])
     });
     _appUserCollection.doc(otherUserId).update({
       'friendsId': FieldValue.arrayUnion([userId])
@@ -146,10 +146,10 @@ class AppUserService {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final userDoc = _appUserCollection.doc(userId);
     _appUserCollection.doc(otherUserId).update({
-      'requestFriendFrom': FieldValue.arrayRemove([userId])
+      'requestFriendTo': FieldValue.arrayRemove([userId])
     });
     userDoc.update({
-      'requestFriendTo': FieldValue.arrayRemove([otherUserId])
+      'requestFriendFromg': FieldValue.arrayRemove([otherUserId])
     });
   }
 
