@@ -60,25 +60,33 @@ class ReviewService {
     return null;
   }
 
-  static Future<void> editReviewForBook(String bookId, Review review) async {
+static Future<void> editReviewForBook(String bookId, Review review) async {
     DocumentReference bookDocument = _booksCollection.doc(bookId);
     try {
       DocumentSnapshot currentBookSnapshot = await bookDocument.get();
       List<dynamic> reviews = currentBookSnapshot.get('reviews') ?? [];
+      double totalRating = 0;
+
       reviews = reviews.map((r) {
         if (r['idUser'] == review.idUser) {
-          return review.toDocument();
+          r = review.toDocument();
         }
+        totalRating += r['rating'];
         return r;
       }).toList();
 
-      await bookDocument.update({'reviews': reviews});
-      print('Review has been edited.');
+      double newBookRating = totalRating / reviews.length;
+
+      await bookDocument.update({
+        'reviews': reviews,
+        'rating': newBookRating,
+      });
+      print('Review has been edited and rating updated.');
     } catch (e) {
       print('Failed to edit review: $e');
     }
   }
-  
+
   // static Future<List<Review>> fetchReviews() async {
   //   try {
   //     QuerySnapshot snapshot = await _reviewCollection.get();

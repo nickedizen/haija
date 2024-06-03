@@ -19,11 +19,13 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
   String _reviewText = '';
   bool _hasReviewed = false;
   Review? _existingReview;
+  late TextEditingController _reviewController;
 
   @override
   void initState() {
     super.initState();
     _user = FirebaseAuth.instance.currentUser!; // Dapatkan pengguna saat ini
+    _reviewController = TextEditingController();
     _checkIfUserHasReviewed();
   }
 
@@ -35,6 +37,7 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
         _existingReview = existingReview;
         _rating = existingReview.rating;
         _reviewText = existingReview.comment ?? '';
+        _reviewController.text = _reviewText;
       });
     }
   }
@@ -56,6 +59,12 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
     }
 
     Navigator.of(context).pop();
+  }
+
+  @override
+  void dispose() {
+    _reviewController.dispose();
+    super.dispose();
   }
 
   @override
@@ -123,11 +132,11 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
             const SizedBox(height: 10.0),
             TextField(
               maxLines: 5,
+              controller: _reviewController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Write your review here...',
               ),
-              controller: TextEditingController(text: _reviewText),
               onChanged: (text) {
                 setState(() {
                   _reviewText = text;

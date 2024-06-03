@@ -333,7 +333,7 @@ class _MainScreenState extends State<DetailScreen> {
                   ),
                   SizedBox(height: 20),
                   SizedBox(
-                    height: 300,
+                    height: 570,
                     child: ReviewListView(function: ReviewService.getReviewsForBook(widget.book.idBook!)),
                   ),
                   SizedBox(height: 20),
