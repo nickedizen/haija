@@ -248,7 +248,6 @@ static Future<void> addNewBook(Books book, BuildContext context) async {
 
     return controller.stream;
   }
-}
 
   static Stream<List<Books>> getBooksByTitle(String title) {
   String searchKey = title.toLowerCase();
