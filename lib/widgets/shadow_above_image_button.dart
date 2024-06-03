@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 class ShadowAboveImageButton extends StatelessWidget {
   final String text;
   final String imageAsset;
+  final Function onTap;
 
-  const ShadowAboveImageButton({super.key, required this.text, required this.imageAsset});
+  const ShadowAboveImageButton({super.key, required this.text, required this.imageAsset, required this.onTap,});
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +57,9 @@ class ShadowAboveImageButton extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  // onTap: () => Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(builder: (context) => FilteredScreen(genre: this.text))),
+                  onTap: () {
+                    onTap();
+                  },
                   borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
               ),
