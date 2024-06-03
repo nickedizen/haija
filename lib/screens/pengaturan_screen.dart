@@ -1,31 +1,26 @@
-import 'package:final_project_haija/screens/sign_in_screen.dart';
-import 'package:final_project_haija/screens/sign_up_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:final_project_haija/screens/themeProvider.dart';
 
 class PengaturanScreen extends StatefulWidget {
-  const PengaturanScreen({super.key});
+  const PengaturanScreen({Key? key}) : super(key: key);
 
   @override
-  _PengaturanScreen createState() => _PengaturanScreen();
+  _PengaturanScreenState createState() => _PengaturanScreenState();
 }
 
-class _PengaturanScreen extends State<PengaturanScreen> {
+class _PengaturanScreenState extends State<PengaturanScreen> {
   bool _tema = false;
-  
 
   @override
   void initState() {
     super.initState();
-
-    _tema = false;
+    _tema = Provider.of<Themeprovider>(context, listen: false).isDark;
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
-       return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -33,7 +28,7 @@ class _PengaturanScreen extends State<PengaturanScreen> {
             Icon(Icons.settings),
             SizedBox(width: 8.0),
             const Text(
-              'SETTINGS',
+              'Setting',
               style: TextStyle(fontSize: 20.0),
             ),
           ],
@@ -47,34 +42,20 @@ class _PengaturanScreen extends State<PengaturanScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Column(
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: SwitchListTile(
-                    title: const Text('Tema Gelap'),
-                    value: _tema,
-                    onChanged: (value) {
-                      setState(() {
-                        _tema = value;
-                      });
-                    },
-                  ),
-                ),
-              ],
+            // Switch for Dark/Light Mode
+            SwitchListTile(
+              title: const Text('Tema Gelap'),
+              value: _tema,
+              onChanged: (value) {
+                setState(() {
+                  _tema = value;
+                });
+                Provider.of<Themeprovider>(context, listen: false).setTheme(value);
+              },
             ),
             const SizedBox(height: 70.0),
             ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => SignInScreen()),
-                );
-              },
+              onPressed: () {},
               child: const Text('Log Out'),
             ),
           ],
