@@ -2,22 +2,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+
 class GoogleMapsScreen extends StatefulWidget {
   final double latitude;
   final double longitude;
 
+
   const GoogleMapsScreen(
       {super.key, required this.latitude, required this.longitude});
+
 
   @override
   State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
 }
+
 
 class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   final Completer<GoogleMapController> _controller = Completer();
   late CameraPosition _cameraPosition;
   late Set<Marker> _markers;
   late MarkerId _markerId;
+
 
   @override
   void initState() {
@@ -26,10 +31,10 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
       target: LatLng(widget.latitude, widget.longitude),
       zoom: 15,
     );
-
+   
     _markers = {};
-    _markerId =
-        MarkerId(widget.latitude.toString() + widget.longitude.toString());
+    _markerId = MarkerId(widget.latitude.toString() + widget.longitude.toString());
+
 
     _markers.add(
       Marker(
@@ -42,6 +47,7 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +73,9 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
         label: const Text('To the location!'),
         icon: const Icon(Icons.directions_car),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
+
 
   Future<void> _goToLocation() async {
     final GoogleMapController controller = await _controller.future;

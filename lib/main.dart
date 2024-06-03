@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:final_project_haija/screens/ratingreview_screen.dart';
 import 'package:final_project_haija/screens/userprofile_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project_haija/screens/categories_screen.dart';
@@ -15,6 +19,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    await FlutterConfig.loadEnvVariables();
+  }
   runApp(const MyApp());
 }
 
