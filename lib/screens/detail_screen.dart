@@ -30,7 +30,7 @@ class _MainScreenState extends State<DetailScreen> {
   static final CollectionReference _userCollection = _database.collection('app-users');
   static final CollectionReference _bookCollection =
       _database.collection('books');
-  static final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  late String currentUserId;
   List<Author> listAuthor = [];
   bool isFavorite = false;
   late int lovedBy;
@@ -43,6 +43,7 @@ class _MainScreenState extends State<DetailScreen> {
     _getUserStatus();
     _getListAuthor();
     isFavorite = checkIfLiked();
+    currentUserId = FirebaseAuth.instance.currentUser!.uid;
     lovedBy = widget.book.idOfUsersLikeThisBook != null ? widget.book.idOfUsersLikeThisBook!.length : 0;
   }
   void _getUserStatus() async {
@@ -190,7 +191,6 @@ class _MainScreenState extends State<DetailScreen> {
                         )
                         ),
                   ])),
-        
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 child: Text(

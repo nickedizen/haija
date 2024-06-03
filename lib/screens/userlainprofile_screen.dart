@@ -1,7 +1,8 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
@@ -21,7 +22,42 @@ class UserLainProfileScreen extends StatefulWidget {
 }
 
 class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
+  late String currentUserId;
+  late String userLainId;
+  String friendStatus = 'notFriends';
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    userLainId = widget.user.userId!;
+    _initializeFriendStatusButton();
+
+  }
+
+  void _initializeFriendStatusButton() async {
+    final currentUserSnapshot = await FirebaseFirestore.instance.collection('app-users').doc(currentUserId).get();
+    print('test 1');
+    final List<String> requestFriendFromList = List<String>.from(currentUserSnapshot.get('requestFriendFrom') ?? []);
+    print('test 2');
+    final List<String> requestFriendToList = List<String>.from(currentUserSnapshot.get('requestFriendTo') ?? []);
+    print('test 3');
+    final List<String> friendsList = List<String>.from(currentUserSnapshot.get('friendsId') ?? []);
+    print('test 4');
+    setState(() {      
+      if (requestFriendFromList.contains(userLainId)) {
+        friendStatus = 'requestFriendFrom';
+      } else if (requestFriendToList.contains(userLainId)) {
+        friendStatus = 'requestFriendTo';
+      } else if (friendsList.contains(userLainId)) {
+        friendStatus = 'friends';
+      } else {
+        friendStatus = 'notFriends';
+      }
+    });
+    print('status friend: $friendStatus');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,23 +158,94 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                       endIndent: 20,
                       color: Colors.grey,
                     ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (friendStatus == 'notFriends')
+                          TextButton(
+                            child: const Text(
                               'ADD FRIEND',
-                              style: TextStyle(fontSize: 20),
-                            )),
-                        Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              'MEETUP',
-                              style: TextStyle(fontSize: 20),
-                            )),
-                      ],
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.green
+                              ),
+                            ),
+                            onPressed: () {
+                              AppUserService.addOtherUser(userLainId);
+                              setState(() {
+                                friendStatus = 'requestFriendTo';
+                              });
+                            },
+                          ),
+                          if (friendStatus == 'requestFriendTo')
+                          const Text(
+                            'PENDING',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w300
+                            ),
+                          ),
+                          if (friendStatus == 'requestFriendFrom')
+                          Row(
+                            children: [
+                              TextButton(
+                                child: const Text(
+                                  'CONFIRM',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.green
+                                  ),
+                                ),
+                                onPressed: () {
+                                  AppUserService.confirmOtherUserAsFriend(userLainId);
+                                  setState(() {
+                                    friendStatus = 'friends';
+                                  });
+                                },
+                              ),
+                              TextButton(
+                                child: const Text(
+                                  'DENY',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.red
+                                  ),
+                                ),
+                                onPressed: () {
+                                  AppUserService.denyOtherUserAsFriend(userLainId);
+                                  setState(() {
+                                    friendStatus = 'notFriends';
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          if (friendStatus == 'friends')
+                            TextButton(
+                                child: const Text(
+                                  'REMOVE FRIEND',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.red
+                                  ),
+                                ),
+                                onPressed: () {
+                                  AppUserService.removeOtherUserFromFriend(userLainId);
+                                  setState(() {
+                                    friendStatus = 'notFriends';
+                                  });
+                                },
+                              ),                        
+                          Text(
+                            'MEETUP',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 10),
                     Divider(

@@ -4,11 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project_haija/models/app_user.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/screens/editProfile_screen.dart';
+import 'package:final_project_haija/screens/sign_in_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -347,7 +349,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                 ]),
                               ),
                             ]),
-                        SizedBox(height: 30)
+                        SizedBox(height: 30),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => SignInScreen())
+                            );
+                          }, 
+                          child: Text('Log Out'))
                       ],
                     ),
                   )

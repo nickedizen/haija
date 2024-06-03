@@ -10,6 +10,9 @@ class AppUser {
   double? latitude;
   double? longitude;
   List<String>? favoriteBooks;
+  List<String>? requestFriendTo;
+  List<String>? requestFriendFrom;
+  List<String>? friendsId;
 
   AppUser({
     this.userId,
@@ -19,7 +22,10 @@ class AppUser {
     this.profileBio,
     this.latitude,
     this.longitude,
-    this.favoriteBooks
+    this.favoriteBooks,
+    this.requestFriendTo,
+    this.requestFriendFrom,
+    this.friendsId
   });
 
   factory AppUser.fromDocument(DocumentSnapshot doc) {
@@ -30,9 +36,12 @@ class AppUser {
       username: data['username'],
       profilePicture: data['profilePicture'],
       profileBio: data['profileBio'],
-      latitude: data['latitude'],
-      longitude: data['longitude'],
-      favoriteBooks: data['favoriteBooks'],
+      latitude: data['latitude'] != null ? data['latitude'] as double : null,
+      longitude: data['longitude'] != null ? data['longitude'] as double : null,
+      favoriteBooks: data['favoriteBooks'] != null ? List<String>.from(data['favoriteBooks']) : [],
+      requestFriendTo: data['requestFriendTo']!= null ? List<String>.from(data['requestFriendTo']) : [],
+      requestFriendFrom: data['requestFriendFrom']!= null ? List<String>.from(data['requestFriendFrom']) : [],
+      friendsId: data['friendsId']!= null ? List<String>.from(data['friendsId']) : []
     );
   }
 
@@ -46,6 +55,10 @@ class AppUser {
       'latitude': latitude,
       'longitude': longitude,
       'favoriteBooks': favoriteBooks,
+      'requestFriendTo': requestFriendTo,
+      'requestFriendFrom': requestFriendFrom,
+      'friendsId': friendsId
+
     };
   }
 }
