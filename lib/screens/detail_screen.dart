@@ -265,7 +265,7 @@ class _MainScreenState extends State<DetailScreen> {
                   padding: EdgeInsets.only(top: 10),
                   child: Text(
                     '${widget.book.rating ?? 0} / 5 | ${widget.book.reviews != [] ? widget.book.reviews!.length : 0} reviews',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                     ),

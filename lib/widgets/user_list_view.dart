@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:final_project_haija/models/app_user.dart';
+import 'package:final_project_haija/screens/userlainprofile_screen.dart';
 import 'package:final_project_haija/screens/userprofile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -34,37 +35,60 @@ class UserListView extends StatelessWidget {
                 shrinkWrap: true,
                 children: snapshot.data!.map((document) {
                   if (document.userId! != currentUserId) {
-                    return Column(
-                      children: [
-                        Stack(
-                          children: [
-                            ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: document.profilePicture!,
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                customBorder: const CircleBorder(),
-                                child: Container(
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              ClipOval(
+                                child: 
+                                document.profilePicture != null
+                                ? CachedNetworkImage(
+                                  imageUrl: document.profilePicture!,
                                   height: 100,
                                   width: 100,
+                                  fit: BoxFit.cover,
+                                )
+                                : Container(
+                                  height: 100,
+                                  width: 100,
+                                  child: const CircleAvatar(
+                                    backgroundImage: AssetImage(
+                                        "images/placeholder_image.png"
+                                    ),
+                                  ),
                                 ),
-                                onTap: () {},
                               ),
-                            )
-                          ],
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  customBorder: const CircleBorder(),
+                                  child: Container(
+                                    height: 100,
+                                    width: 100,
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserLainProfileScreen(user: document)));
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                          RichText(
+                          text: TextSpan(
+                            text: document.username,
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontSize: 18
+                            ),
+                            recognizer: TapGestureRecognizer()..onTap = () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context) => UserLainProfileScreen(user: document)));
+                            }
+                          ),
                         ),
-                        Text(
-                          document.username,
-                          maxLines: 2,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   } else {
                     return Column(
@@ -72,11 +96,22 @@ class UserListView extends StatelessWidget {
                         Stack(
                           children: [
                             ClipOval(
-                              child: CachedNetworkImage(
+                              child: 
+                              document.profilePicture != null
+                              ? CachedNetworkImage(
                                 imageUrl: document.profilePicture!,
                                 height: 100,
                                 width: 100,
                                 fit: BoxFit.cover,
+                              )
+                              : Container(
+                                height: 100,
+                                width: 100,
+                                child: const CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                      "images/placeholder_image.png"
+                                  ),
+                                ),
                               ),
                             ),
                             Material(
@@ -100,6 +135,7 @@ class UserListView extends StatelessWidget {
                             style: const TextStyle(
                               color: Colors.blue,
                               fontSize: 18,
+                              fontWeight: FontWeight.bold
                             ),
                             recognizer: TapGestureRecognizer()..onTap = () {
                               Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserProfileScreen()));
