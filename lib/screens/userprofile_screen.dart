@@ -6,6 +6,7 @@ import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/screens/editProfile_screen.dart';
 import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
+import 'package:final_project_haija/widgets/custom_appbar.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -107,46 +108,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, left: 15),
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                      padding:
-                          const EdgeInsets.only(top: 60, left: 13, right: 15),
-                      child: TextField(
-                        style: TextStyle(height: 0.1),
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: BorderSide(width: 0.8),
-                            ),
-                            hintText: 'Search',
-                            prefixIcon: Icon(
-                              Icons.search,
-                              size: 30.0,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: () {},
-                            )),
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, left: 13, right: 15),
-                  child: IconButton(
-                    icon: Icon(Icons.chat_bubble),
-                    onPressed: () {},
-                  ),
-                ),
-              ]),
+              
               Stack(
                 children: [
                   Padding(
