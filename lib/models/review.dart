@@ -13,13 +13,21 @@ class Review {
     required this.reviewDate,
   });
 
-  factory Review.fromDocument(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory Review.fromDocument(Map<String, dynamic> data) {
+    return Review(
+      idUser: data['idUser'],
+      rating: (data['rating'] as num).toDouble(), // Pastikan tipe data double
+      comment: data['comment'],
+      reviewDate: (data['reviewDate'] as Timestamp).toDate(),
+    );
+  }
+
+  factory Review.fromMap(Map<String, dynamic> data) {
     return Review(
       idUser: data['idUser'], 
-      rating: data['rating'], 
+      rating: data['rating'].toDouble(), 
       comment: data['comment'],
-      reviewDate: data['reviewDate']
+      reviewDate: (data['reviewDate'] as Timestamp).toDate(),
     );
   }
 

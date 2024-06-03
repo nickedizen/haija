@@ -116,26 +116,11 @@ class BooksService {
     }
   }
 
-  static Stream<List<Books>> getBooksList() {
-    return _booksCollection.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return Books(
-          idBook: data['idBook'],
-          title: data['title'],
-          author: data['author'] != null ? (data['author'] as List<dynamic>).cast<String>() : [],
-          publishedDate: (data['publishedDate'] as Timestamp).toDate(),
-          rating: data['rating'] != null ? data['rating'] as double : null,
-          description: data['description'],
-          genre: data['genre'] != null ? (data['genre'] as List<dynamic>).cast<String>() : [],
-          imageAsset: data['imageAsset'],
-          reviews: data['reviews'] != null ? (data['reviews'] as List<dynamic>).cast<Review>() : [],
-          idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>() : [],
-        );
-      }).toList();
-      
-    });
-  }
+static Stream<List<Books>> getBooksList() {
+  return _booksCollection.snapshots().map((snapshot) {
+    return snapshot.docs.map((doc) => Books.fromDocument(doc)).toList();
+  });
+}
 
 static Stream<List<Books>> getUserFavoriteBooksStream(String userId) {
   return _userCollection.snapshots().asyncMap((snapshot) async {

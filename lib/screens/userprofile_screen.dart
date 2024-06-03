@@ -18,11 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import '../data/book_data.dart';
-import '../models/book.dart';
-import '../widgets/indented_list_view.dart';
-import '../widgets/profile_info_item.dart';
+
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -35,10 +31,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   AppUser? user;
   late String userId;
   Stream<Books>? favoriteBooksId;
-  bool isSignedIn = false;
-  String email = '';
-  String userName = '';
-  int favoriteBookCount = 0;
   final TextEditingController _editedUserNameController =
       TextEditingController();
 
@@ -60,11 +52,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         _imageFile = pickedFile.path;
       });
     }
-  }
-
-  void _saveProfileImagePath(String path) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('_imageFile', path);
   }
 
   void _showPicker() {
@@ -109,6 +96,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppbar(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -278,6 +266,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: CustomNavigationBar(selectedIndex: 3));
+        bottomNavigationBar: CustomNavigationBar(selectedIndex: 2));
   }
 }

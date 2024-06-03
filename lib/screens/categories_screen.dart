@@ -22,6 +22,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppbar(),
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(

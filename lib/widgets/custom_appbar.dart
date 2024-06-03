@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/services/books_service.dart';
 
-class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
-  final Function(List<Books>) onSearch; // Modify the function to return a list of filtered books
+class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // Modify the function to return a list of filtered books
 
-  const CustomAppbar({Key? key, required this.onSearch}) : super(key: key);
+  const CustomAppbar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +27,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
             ),
             suffixIcon: IconButton(
               icon: const Icon(Icons.clear),
-              onPressed: () {
-                onSearch([]); // Clear search input
+              onPressed: () { // Clear search input
               },
             ),
           ),

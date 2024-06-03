@@ -5,10 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
 class RatingReviewScreen extends StatefulWidget {
-  Books book;
+  final Books book;
   RatingReviewScreen({required this.book, super.key});
 
   @override
@@ -19,12 +17,45 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
   late User _user;
   double _rating = 0;
   String _reviewText = '';
-
+  bool _hasReviewed = false;
+  Review? _existingReview;
 
   @override
   void initState() {
     super.initState();
     _user = FirebaseAuth.instance.currentUser!; // Dapatkan pengguna saat ini
+    _checkIfUserHasReviewed();
+  }
+
+  void _checkIfUserHasReviewed() async {
+    Review? existingReview = await ReviewService.getUserReviewForBook(widget.book.idBook!, _user.uid);
+    if (existingReview != null) {
+      setState(() {
+        _hasReviewed = true;
+        _existingReview = existingReview;
+        _rating = existingReview.rating;
+        _reviewText = existingReview.comment ?? '';
+      });
+    }
+  }
+
+  void _submitReview() async {
+    Review review = Review(
+      idUser: _user.uid,
+      rating: _rating,
+      comment: _reviewText,
+      reviewDate: DateTime.now(),
+    );
+
+    if (_hasReviewed) {
+      // Edit existing review
+      await ReviewService.editReviewForBook(widget.book.idBook!, review);
+    } else {
+      // Add new review
+      await ReviewService.addNewReviewToBook(widget.book.idBook!, review);
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -34,46 +65,21 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
               widget.book.title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 28.0,
                 fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20.0),
             Center(
-              child: Image.asset(
-                'assets/dorian_gray.png',
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            const Center(
-              child: Row(
-                children: <Widget>[
-                  Text(
-                  'Author : ',
-                  style: TextStyle(
-                  fontSize: 18.0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-                
-            const SizedBox(height: 10.0),
-            const Center(
-              child: Row(
-                children: <Widget>[
-                  Text(
-                  'Category : ',
-                  style: TextStyle(
-                  fontSize: 18.0,
-                    ),
-                  ),
-                ],
+              child: Image.network(
+                widget.book.imageAsset,
+                height: 200,
               ),
             ),
             const SizedBox(height: 20.0),
@@ -121,6 +127,7 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
                 border: OutlineInputBorder(),
                 hintText: 'Write your review here...',
               ),
+              controller: TextEditingController(text: _reviewText),
               onChanged: (text) {
                 setState(() {
                   _reviewText = text;
@@ -128,24 +135,10 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
               },
             ),
             const SizedBox(height: 20.0),
-           ElevatedButton(
-  onPressed: () async {
-    Review review = Review(
-      idUser: _user.uid, // Ganti dengan user ID yang sesuai
-      rating: _rating,
-      comment: _reviewText,
-      reviewDate: DateTime.now(),
-    );
-    await ReviewService.addNewReviewToBook(widget.book.idBook!, review);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Review has been added.'),
-      ),
-    );
-  },
-  child: const Text('Submit'),
-),
-
+            ElevatedButton(
+              onPressed: _submitReview,
+              child: const Text('Submit'),
+            ),
           ],
         ),
       ),

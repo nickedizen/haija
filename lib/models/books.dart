@@ -27,22 +27,21 @@ class Books {
     this.idOfUsersLikeThisBook
   });
 
-  factory Books.fromDocument(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+factory Books.fromDocument(DocumentSnapshot doc) {
+  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Books(
       idBook: data['idBook'],
       title: data['title'],
-      author: data['author'],
-      publishedDate: data['publishedDate'],
-      rating: data['rating'],
+      author: data['author'] != null ? (data['author'] as List<dynamic>).cast<String>() : [],
+      publishedDate: (data['publishedDate'] as Timestamp).toDate(),
+      rating: data['rating'] != null ? (data['rating'] is int ? (data['rating'] as int).toDouble() : data['rating'] as double) : null,
       description: data['description'],
-      genre: data['genre'],
+      genre: data['genre'] != null ? (data['genre'] as List<dynamic>).cast<String>() : [],
       imageAsset: data['imageAsset'],
-      reviews: data['reviews'],
-      idOfUsersLikeThisBook: data['idOfUsersLikeThisBook']
-    );
-  }
-
+      reviews: data['reviews'] != null ? (data['reviews'] as List<dynamic>).map((review) => Review.fromMap(review)).toList() : [],
+      idOfUsersLikeThisBook: data['idOfUsersLikeThisBook'] != null ? (data['idOfUsersLikeThisBook'] as List<dynamic>).cast<String>() : [],
+  );
+}
   Map<String, dynamic> toDocument() {
     return {
       'idBook': idBook,

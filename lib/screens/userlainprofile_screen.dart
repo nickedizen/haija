@@ -63,6 +63,7 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppbar(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -292,6 +293,6 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: CustomNavigationBar(selectedIndex: 3));
+      );
   }
 }
