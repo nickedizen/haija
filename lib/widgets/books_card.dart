@@ -70,11 +70,13 @@ class _BooksCardState extends State<BooksCard> {
                       padding: const EdgeInsets.only(left: 16, top: 8),
                       child: Text(
                         widget.book.genre[0],
-                        style: const TextStyle(fontSize: 10, color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 16, top: 3, right: 16),
+                      padding:
+                          const EdgeInsets.only(left: 16, top: 3, right: 16),
                       child: Text(
                         widget.book.title,
                         maxLines: 1,
@@ -89,13 +91,13 @@ class _BooksCardState extends State<BooksCard> {
                       padding: const EdgeInsets.only(left: 16, bottom: 8),
                       child: Text(
                         authorList.join(', '),
-                        style: const TextStyle(fontSize: 10, color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.white),
                       ),
                     )
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -103,16 +105,18 @@ class _BooksCardState extends State<BooksCard> {
           padding: const EdgeInsets.all(4.0),
           child: Positioned.fill(
               child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(15),
-                  onTap: () {
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) => DetailScreen(book: widget.book)));
-                  },
-                ),
-              )
-          ),
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(15),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailScreen(book: widget.book)),
+                );
+              },
+            ),
+          )),
         )
       ],
     );

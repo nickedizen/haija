@@ -168,7 +168,6 @@ static Future<void> addNewBook(Books book, BuildContext context) async {
       QuerySnapshot booksSnapshot = await _booksCollection
           .where(FieldPath.documentId, whereIn: listFavoriteBookIds)
           .get();
-
       return booksSnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         return Books(
