@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:final_project_haija/models/books.dart';
 import 'package:final_project_haija/services/books_service.dart';
 
-class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // Modify the function to return a list of filtered books
+class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { 
+  final TextEditingController _searchController = TextEditingController(); // Modify the function to return a list of filtered books
 
-  const CustomAppbar({Key? key}) : super(key: key);
+  CustomAppbar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget { // M
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.chat_bubble),
+          icon: const Icon(Icons.notifications),
           onPressed: () {},
         ),
       ],
