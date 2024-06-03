@@ -114,6 +114,24 @@ class AppUserService {
     });
   }
 
+static Stream<List<AppUser>> getFriendsStream(String userId) {
+  return _appUserCollection.doc(userId).snapshots().asyncExpand((snapshot) async* {
+    var friendIdList = List<String>.from(snapshot.get('friendsId') ?? []);
+    
+    // Jika daftar teman kosong, kembalikan stream kosong
+    if (friendIdList.isEmpty) {
+      yield [];
+    } else {
+      QuerySnapshot friendsSnapshot = await _appUserCollection
+        .where(FieldPath.documentId, whereIn: friendIdList)
+        .get();
+
+      var friendsList = friendsSnapshot.docs.map((doc) => AppUser.fromDocument(doc)).toList();
+      yield friendsList;
+    }
+  });
+}
+
   static Future<void> addOtherUser(String otherUserId) async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final userDoc = _appUserCollection.doc(userId);

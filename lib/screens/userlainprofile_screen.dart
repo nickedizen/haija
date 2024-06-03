@@ -6,6 +6,7 @@ import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
+import 'package:final_project_haija/widgets/user_list_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -310,70 +311,7 @@ class _UserLainProfileScreenState extends State<UserLainProfileScreen> {
                     SizedBox(
                       height: 20,
                     ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Column(children: [
-                              ClipOval(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              Text('User 1')
-                            ]),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Column(children: [
-                              ClipOval(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              Text('User 1')
-                            ]),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Column(children: [
-                              ClipOval(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              Text('User 1')
-                            ]),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Column(children: [
-                              ClipOval(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 30),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              Text('User 1')
-                            ]),
-                          ),
-                        ]),
+                    UserListView(function: AppUserService.getFriendsStream(userLainId), currentUserId: currentUserId),
                     SizedBox(height: 30),
                   ],
                 ),

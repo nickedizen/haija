@@ -9,6 +9,7 @@ import 'package:final_project_haija/services/appuser_service.dart';
 import 'package:final_project_haija/services/books_service.dart';
 import 'package:final_project_haija/widgets/custom_navigation_bar.dart';
 import 'package:final_project_haija/widgets/new_indented_list.dart';
+import 'package:final_project_haija/widgets/user_list_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,7 +32,7 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   AppUser? user;
-  String userId = FirebaseAuth.instance.currentUser!.uid;
+  late String userId;
   Stream<Books>? favoriteBooksId;
   bool isSignedIn = false;
   String email = '';
@@ -101,6 +102,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     _getUser();
+    userId = FirebaseAuth.instance.currentUser!.uid;
   }
 
   @override
@@ -285,70 +287,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: Column(children: [
-                                  ClipOval(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('User 1')
-                                ]),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: Column(children: [
-                                  ClipOval(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('User 1')
-                                ]),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: Column(children: [
-                                  ClipOval(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('User 1')
-                                ]),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 2),
-                                child: Column(children: [
-                                  ClipOval(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.grey, width: 30),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('User 1')
-                                ]),
-                              ),
-                            ]),
+                        UserListView(function: AppUserService.getFriendsStream(userId), currentUserId: userId),
                         SizedBox(height: 30),
                         ElevatedButton(
                           onPressed: () async {
