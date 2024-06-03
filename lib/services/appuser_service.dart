@@ -15,10 +15,9 @@ class AppUserService {
   static final CollectionReference _booksCollection =
       _database.collection('books');
   static final _storage = FirebaseStorage.instance;
-  static final userId = FirebaseAuth.instance.currentUser!.uid;
-  static final userDoc = _appUserCollection.doc(userId);
 
   static Future<void> addNewAppUser(AppUser appUser) async {
+  final userId = FirebaseAuth.instance.currentUser!.uid;
     Map<String, dynamic> newAppUser = {
       'userId': userId,
       'status': appUser.status,
@@ -28,11 +27,15 @@ class AppUserService {
       'latitude': appUser.latitude,
       'longitude': appUser.longitude,
       'favoriteBooks': appUser.favoriteBooks,
+      'requestFriendTo': appUser.requestFriendTo,
+      'requestFriendFrom': appUser.requestFriendFrom,
+      'friendsId': appUser.friendsId
     };
     await _appUserCollection.doc(userId).set(newAppUser);
   }
 
   static Future<void> updateAppUser(AppUser appUser) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
     Map<String, dynamic> updatedAppUser = {
       'userId': appUser.userId,
       'status': appUser.status,
@@ -42,26 +45,21 @@ class AppUserService {
       'latitude': appUser.latitude,
       'longitude': appUser.longitude,
       'favoriteBooks': appUser.favoriteBooks,
+      'requestFriendTo': appUser.requestFriendTo,
+      'requestFriendFrom': appUser.requestFriendFrom,
+      'friendsId': appUser.friendsId
     };
     await _appUserCollection.doc(userId).update(updatedAppUser);
   }
 
   static Future<AppUser?> getAppUserData() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
     try {
       final userSnapshot = await userDoc.get();
       if (userSnapshot.exists) {
-        final userData = userSnapshot.data() as Map<String, dynamic>;
-        print("User data fetched: $userData");
-        return AppUser(
-          userId: userData['userId'],
-          status: userData['status'],
-          username: userData['username'],
-          profilePicture: userData['profilePicture'],
-          profileBio: userData['profileBio'],
-          latitude: userData['latitude'],
-          longitude: userData['longitude'],
-          favoriteBooks: userData['favoriteBooks']!= null ? (userData['favoriteBooks'] as List<dynamic>).cast<String>() : [],
-        );
+        print("User data fetched.");
+        return AppUser.fromDocument(userSnapshot);
       } else {
         print("User document does not exist");
         return null;
@@ -93,6 +91,8 @@ class AppUserService {
   }
 
   static Future<String> getUserStatus() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
     final userSnapshot = await userDoc.get();
     final userData = userSnapshot.data() as Map<String, dynamic>;
     return userData['status'];
@@ -110,19 +110,75 @@ class AppUserService {
       .where(FieldPath.documentId, whereIn: userList)
       .get();
 
-      return usersSnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return AppUser(
-          userId: data['userId'],
-          status: data['status'],
-          username: data['username'],
-          profilePicture: data['profilePicture'],
-          profileBio: data['profileBio'],
-          latitude: data['latitude'] != null ? data['latitude'] as double : null,
-          longitude: data['longitude'] != null ? data['longitude'] as double : null,
-          favoriteBooks: data['favoriteBooks'] != null ? List<String>.from(data['favoriteBooks']) : [],
-        );
-      }).toList();
+      return usersSnapshot.docs.map((doc) => AppUser.fromDocument(doc)).toList();
+    });
+  }
+
+static Stream<List<AppUser>> getFriendsStream(String userId) {
+  return _appUserCollection.doc(userId).snapshots().asyncExpand((snapshot) async* {
+    var friendIdList = List<String>.from(snapshot.get('friendsId') ?? []);
+    
+    // Jika daftar teman kosong, kembalikan stream kosong
+    if (friendIdList.isEmpty) {
+      yield [];
+    } else {
+      QuerySnapshot friendsSnapshot = await _appUserCollection
+        .where(FieldPath.documentId, whereIn: friendIdList)
+        .get();
+
+      var friendsList = friendsSnapshot.docs.map((doc) => AppUser.fromDocument(doc)).toList();
+      yield friendsList;
+    }
+  });
+}
+
+  static Future<void> addOtherUser(String otherUserId) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
+    _appUserCollection.doc(otherUserId).update({
+      'requestFriendFrom': FieldValue.arrayUnion([userId])
+    });
+    userDoc.update({
+      'requestFriendTo': FieldValue.arrayUnion([otherUserId])
+    });
+  }
+
+  static Future<void> confirmOtherUserAsFriend(String otherUserId) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
+    _appUserCollection.doc(otherUserId).update({
+      'requestFriendTo': FieldValue.arrayRemove([userId])
+    });
+    userDoc.update({
+      'requestFriendFrom': FieldValue.arrayRemove([otherUserId])
+    });
+    _appUserCollection.doc(otherUserId).update({
+      'friendsId': FieldValue.arrayUnion([userId])
+    });
+    userDoc.update({
+      'friendsId': FieldValue.arrayUnion([otherUserId])
+    });
+  }
+
+  static Future<void> denyOtherUserAsFriend(String otherUserId) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
+    _appUserCollection.doc(otherUserId).update({
+      'requestFriendTo': FieldValue.arrayRemove([userId])
+    });
+    userDoc.update({
+      'requestFriendFromg': FieldValue.arrayRemove([otherUserId])
+    });
+  }
+
+  static Future<void> removeOtherUserFromFriend(String otherUserId) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userDoc = _appUserCollection.doc(userId);
+    _appUserCollection.doc(otherUserId).update({
+      'friendsId': FieldValue.arrayRemove([userId])
+    });
+    userDoc.update({
+      'friendsId': FieldValue.arrayRemove([otherUserId])
     });
   }
 }

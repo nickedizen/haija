@@ -21,7 +21,6 @@ class BooksService {
   static final CollectionReference _genreCollection = _database.collection('genres');
   static final CollectionReference _userCollection = _database.collection('app-users');
   static final _storage = FirebaseStorage.instance;
-  static final userId = FirebaseAuth.instance.currentUser!.uid;
 
   static Future<void> addNewBook(Books book, BuildContext context) async {
     String idBook = '${book.title}-${book.author}-${book.publishedDate.year}';

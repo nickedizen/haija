@@ -32,7 +32,7 @@ class _MainScreenState extends State<DetailScreen> {
       _database.collection('app-users');
   static final CollectionReference _bookCollection =
       _database.collection('books');
-  static final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  late String currentUserId;
   List<Author> listAuthor = [];
   bool isFavorite = false;
   late int lovedBy;
@@ -45,9 +45,9 @@ class _MainScreenState extends State<DetailScreen> {
     _getUserStatus();
     _getListAuthor();
     isFavorite = checkIfLiked();
-    lovedBy = widget.book.idOfUsersLikeThisBook != null
-        ? widget.book.idOfUsersLikeThisBook!.length
-        : 0;
+    currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    lovedBy = widget.book.idOfUsersLikeThisBook != null ? widget.book.idOfUsersLikeThisBook!.length : 0;
+
   }
 
   void _getUserStatus() async {
@@ -118,72 +118,87 @@ class _MainScreenState extends State<DetailScreen> {
                     ],
                   ),
                 ),
-                Container(
-                    color: Colors.grey,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                              padding: EdgeInsets.only(bottom: 7, right: 20),
-                              child: isFavorite
-                                  ? IconButton(
-                                      icon: const Icon(Icons.favorite),
-                                      color: Colors.red,
-                                      onPressed: () async {
-                                        setState(() {
-                                          isFavorite = false;
-                                          lovedBy--;
-                                        });
-                                        //await _bookCollection.doc(widget.book.idBook).update({
-                                        //'idOfUsersLikeThisBook': FieldValue.arrayRemove([currentUserId])
-                                        //});
-                                        await _userCollection
-                                            .doc(currentUserId)
-                                            .update({
-                                          'favoriteBooks':
-                                              FieldValue.arrayRemove(
-                                                  [widget.book.idBook])
-                                        });
-                                      },
-                                    )
-                                  : IconButton(
-                                      icon: const Icon(
-                                          Icons.favorite_border_outlined),
-                                      color: Colors.white,
-                                      onPressed: () async {
-                                        setState(() {
-                                          isFavorite = true;
-                                          lovedBy++;
-                                        });
-                                        await _bookCollection
-                                            .doc(widget.book.idBook)
-                                            .update({
-                                          'idOfUsersLikeThisBook':
-                                              FieldValue.arrayUnion(
-                                                  [currentUserId])
-                                        });
-                                        await _userCollection
-                                            .doc(currentUserId)
-                                            .update({
-                                          'favoriteBooks':
-                                              FieldValue.arrayUnion(
-                                                  [widget.book.idBook])
-                                        });
-                                      },
-                                    )),
-                        ])),
-
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  child: Text(
-                    widget.book.title,
-                    overflow: TextOverflow.clip,
-                    style: const TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
+              ]),
+              // Wrap(
+              //   children: [
+              //     Padding(
+              //         padding: EdgeInsets.only(top: 27, left: 27, right: 27),
+              //         child: Text(
+              //           widget.book.title,
+              //           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              //           textAlign: TextAlign.center,
+              //         )),
+              //   ],
+              // ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                color: Colors.grey,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.only(top: 25),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            widget.book.imageAsset,
+                            height: 210,
+                            width: 130,
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+              Container(
+                  color: Colors.grey,
+                  child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    Padding(
+                        padding: EdgeInsets.only(bottom: 7, right: 20),
+                        child: isFavorite
+                        ? IconButton(
+                          icon: const Icon(Icons.favorite),
+                          color: Colors.red,
+                          onPressed: () async {
+                            setState(() {
+                              isFavorite = false;
+                              lovedBy--;
+                            });
+                            await _bookCollection.doc(widget.book.idBook).update({
+                              'idOfUsersLikeThisBook': FieldValue.arrayRemove([currentUserId])
+                            });
+                            await _userCollection.doc(currentUserId).update({
+                              'favoriteBooks': FieldValue.arrayRemove([widget.book.idBook])
+                            });
+                          },
+                        )
+                        : IconButton(
+                          icon: const Icon(Icons.favorite_border_outlined),
+                          color: Colors.white,
+                          onPressed: () async {
+                            setState(() {
+                              isFavorite = true;
+                              lovedBy++;
+                            });
+                            await _bookCollection.doc(widget.book.idBook).update({
+                              'idOfUsersLikeThisBook': FieldValue.arrayUnion([currentUserId])
+                            });
+                            await _userCollection.doc(currentUserId).update({
+                              'favoriteBooks': FieldValue.arrayUnion([widget.book.idBook])
+                            });
+                          },
+                        )
+                        ),
+                  ])),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                child: Text(
+                  widget.book.title,
+                  overflow: TextOverflow.clip,
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 if (currentUserStatus == 'admin')
