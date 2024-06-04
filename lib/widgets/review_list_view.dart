@@ -18,7 +18,10 @@ class ReviewListView extends StatelessWidget {
   });
 
   Future<AppUser> _getUser(String userId) async {
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('app-users').doc(userId).get();
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('app-users')
+        .doc(userId)
+        .get();
     return AppUser.fromDocument(userSnapshot);
   }
 
@@ -46,7 +49,8 @@ class ReviewListView extends StatelessWidget {
                 return FutureBuilder<AppUser>(
                   future: _getUser(review.idUser),
                   builder: (context, userSnapshot) {
-                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     }
                     if (userSnapshot.hasError || !userSnapshot.hasData) {
@@ -71,7 +75,8 @@ class ReviewListView extends StatelessWidget {
                                         ClipOval(
                                           child: user.profilePicture != null
                                               ? CachedNetworkImage(
-                                                  imageUrl: user.profilePicture!,
+                                                  imageUrl:
+                                                      user.profilePicture!,
                                                   height: 50,
                                                   width: 50,
                                                   fit: BoxFit.cover,
@@ -80,7 +85,8 @@ class ReviewListView extends StatelessWidget {
                                                   height: 50,
                                                   width: 50,
                                                   child: const CircleAvatar(
-                                                    backgroundImage: AssetImage("images/placeholder_image.png"),
+                                                    backgroundImage: AssetImage(
+                                                        "images/placeholder_image.png"),
                                                   ),
                                                 ),
                                         ),
@@ -93,14 +99,18 @@ class ReviewListView extends StatelessWidget {
                                               width: 50,
                                             ),
                                             onTap: () {
-                                              if (user.userId == currentUserId) {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (context) => const UserProfileScreen()
-                                                ));
+                                              if (user.userId ==
+                                                  currentUserId) {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const UserProfileScreen()));
                                               } else {
-                                                Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (context) => UserLainProfileScreen(user: user)
-                                                ));
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            UserLainProfileScreen(
+                                                                user: user)));
                                               }
                                             },
                                           ),
@@ -110,46 +120,54 @@ class ReviewListView extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Container(
-                                    // color: Colors.pink[50],
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            RichText(
-                                              text: TextSpan(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          RichText(
+                                            text: TextSpan(
                                                 text: user.username,
-                                                style: const TextStyle(color: Colors.lightBlue),
-                                                recognizer: TapGestureRecognizer()..onTap = () {
-                                                  if (user.userId == currentUserId) {
-                                                    Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => const UserProfileScreen()
-                                                    ));
-                                                  } else {
-                                                    Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => UserLainProfileScreen(user: user)
-                                                    ));
-                                                  }
-                                                }
-                                              ),
+                                                style: const TextStyle(
+                                                    color: Colors.lightBlue),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        if (user.userId ==
+                                                            currentUserId) {
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          const UserProfileScreen()));
+                                                        } else {
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      UserLainProfileScreen(
+                                                                          user:
+                                                                              user)));
+                                                        }
+                                                      }),
+                                          ),
+                                          const Text(' rated it '),
+                                          RatingBarIndicator(
+                                            rating: review.rating,
+                                            itemBuilder: (context, index) =>
+                                                const Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
                                             ),
-                                            const Text(' rated it '),
-                                            RatingBarIndicator(
-                                              rating: review.rating,
-                                              itemBuilder: (context, index) => const Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
-                                              ),
-                                              itemCount: 5,
-                                              itemSize: 20.0, // Adjust the size of the stars
-                                              direction: Axis.horizontal,
-                                            ),
-                                          ],
-                                        ),
-                                        Text(review.reviewDate.toString())
-                                      ],
-                                    ),
+                                            itemCount: 5,
+                                            itemSize:
+                                                20.0, // Adjust the size of the stars
+                                            direction: Axis.horizontal,
+                                          ),
+                                        ],
+                                      ),
+                                      Text(review.reviewDate.toString())
+                                    ],
                                   ),
                                 ),
                               ],
@@ -159,14 +177,12 @@ class ReviewListView extends StatelessWidget {
                           SizedBox(
                             height: 100,
                             width: double.infinity,
-                            child: Expanded(
-                              child: Text(
-                                review.comment ?? '',
-                                textAlign: TextAlign.start,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
+                            child: Text(
+                              review.comment ?? '',
+                              textAlign: TextAlign.start,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           const Divider(
                             height: 20,

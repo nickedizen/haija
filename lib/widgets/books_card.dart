@@ -17,13 +17,14 @@ class _BooksCardState extends State<BooksCard> {
   Future<void> _getAuthorName() async {
     for (var authorId in widget.book.author) {
       var name = await AuthorService.getAuthorName(authorId);
-      authorList.add(name);
+      setState(() {
+        authorList.add(name);
+      });
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getAuthorName();
   }
@@ -51,6 +52,7 @@ class _BooksCardState extends State<BooksCard> {
                       widget.book.imageAsset,
                       width: double.infinity,
                       height: double.infinity,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -101,10 +103,8 @@ class _BooksCardState extends State<BooksCard> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Positioned.fill(
-              child: Material(
+        Positioned.fill(
+          child: Material(
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(15),
@@ -116,8 +116,8 @@ class _BooksCardState extends State<BooksCard> {
                 );
               },
             ),
-          )),
-        )
+          ),
+        ),
       ],
     );
   }
