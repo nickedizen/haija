@@ -1,5 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/uxG5TkGw)
-# HAIJO LIBRARY
+# HAIJA LIBRARY
 Haijo Library adalah aplikasi buku yang dibuat dengan bahasa pemrograman Dart dengan kerangka kerja Flutter. Aplikasi ini bertujuan untuk menyediakan pengalaman terbaik dalam menampilkan buku dari berbagai genre dan author. Dengan Haijo Library, pengguna dapat dengan mudah menjelajahi dan menemukan buku-buku favorit mereka.
 
 Fitur yang ada pada aplikasi Haijo Library:
@@ -13,7 +13,7 @@ Fitur yang ada pada aplikasi Haijo Library:
 - Adrian Chandra
 - Hocwin Hebert
 - Nicholas Edison
-- Richie Jonathan Chaniago
+- Ricko Andreas Kartono
 
 # Filter berdasarkan genre
 Pengguna dapat dengan mudah memfilter buku berdasarkan genre yang diinginkan. Ini membantu pengguna untuk menemukan buku-buku yang sesuai dengan minat mereka.
